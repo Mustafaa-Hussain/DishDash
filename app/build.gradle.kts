@@ -44,11 +44,11 @@ dependencies {
     implementation(libs.lottie)
 
     ///Glide
-    implementation (libs.glide)
+    implementation(libs.glide)
     //Retrofit
-    implementation (libs.retrofit)
-    implementation (libs.converter.gson)
-    implementation (libs.gson)
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.gson)
 
     implementation(libs.swiperefreshlayout)
 

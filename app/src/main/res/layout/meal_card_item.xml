@@ -6,14 +6,17 @@
     android:layout_height="wrap_content">
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/random_meal_card"
+        android:id="@+id/meal_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        android:elevation="8dp"
         app:cardBackgroundColor="@color/meal_background_color"
         app:cardCornerRadius="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -23,26 +26,15 @@
             android:layout_height="match_parent"
             android:padding="8dp">
 
-            <TextView
-                android:id="@+id/meal_of_the_day"
-                style="@style/text_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/meal_of_the_day"
-                android:textColor="@color/black"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
             <com.google.android.material.imageview.ShapeableImageView
-                android:id="@+id/random_meal_image"
-                android:layout_width="wrap_content"
+                android:id="@+id/meal_image"
+                android:layout_width="match_parent"
                 android:layout_height="180dp"
                 android:layout_marginTop="8dp"
-                android:scaleType="centerCrop"
+                android:scaleType="fitXY"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/meal_of_the_day"
+                app:layout_constraintTop_toTopOf="parent"
                 app:shapeAppearanceOverlay="@style/rounded_image_corner"
                 tools:srcCompat="@drawable/default_image" />
 
@@ -54,11 +46,11 @@
                 android:layout_marginEnd="8dp"
                 android:contentDescription="@string/add_to_favorites"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/random_meal_image"
+                app:layout_constraintTop_toTopOf="@+id/meal_image"
                 app:srcCompat="@drawable/add_to_favorite" />
 
             <TextView
-                android:id="@+id/random_meal_title"
+                android:id="@+id/meal_title"
                 style="@style/sub_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -67,7 +59,7 @@
                 android:textColor="@color/black"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/random_meal_image"
+                app:layout_constraintTop_toBottomOf="@+id/meal_image"
                 tools:text="Salami and cheese pizza" />
 
             <ImageView
@@ -78,8 +70,8 @@
                 android:layout_marginTop="8dp"
                 android:contentDescription="@string/add_to_calender"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/random_meal_image"
-                app:srcCompat="@drawable/calender_icon" />
+                app:layout_constraintTop_toTopOf="@+id/meal_image"
+                app:srcCompat="@drawable/add_to_calendar" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
