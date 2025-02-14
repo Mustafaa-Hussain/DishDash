@@ -41,13 +41,15 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 
-    implementation("com.airbnb.android:lottie:5.2.0")
+    implementation(libs.lottie)
 
     ///Glide
-    implementation ("com.github.bumptech.glide:glide:4.16.0")
+    implementation (libs.glide)
     //Retrofit
-    implementation ("com.squareup.retrofit2:retrofit:2.11.0")
-    implementation ("com.squareup.retrofit2:converter-gson:2.11.0")
-    implementation ("com.google.code.gson:gson:2.12.1")
+    implementation (libs.retrofit)
+    implementation (libs.converter.gson)
+    implementation (libs.gson)
+
+    implementation(libs.swiperefreshlayout)
 
 }

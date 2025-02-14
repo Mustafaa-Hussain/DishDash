@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.google.android.material.behavior.SwipeDismissBehavior;
 import com.mustafa.dishdash.retrofit.ApiService;
 import com.mustafa.dishdash.retrofit.models.random_meal.MealsItem;
 import com.mustafa.dishdash.retrofit.models.random_meal.RandomMeal;
@@ -32,6 +34,7 @@ public class Home extends Fragment {
     private ImageView addToFavorites;
     private ImageView randomMealImage;
     private TextView randomMealTitle;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     private String api_url;
 
@@ -60,6 +63,7 @@ public class Home extends Fragment {
         addToFavorites = view.findViewById(R.id.add_to_favorite);
         randomMealImage = view.findViewById(R.id.random_meal_image);
         randomMealTitle = view.findViewById(R.id.random_meal_title);
+        swipeRefreshLayout = view.findViewById(R.id.refresh_layout);
 
         if (api_url.isEmpty()) {
             Toast.makeText(getContext(), "Wrong api url!", Toast.LENGTH_SHORT).show();
@@ -73,20 +77,22 @@ public class Home extends Fragment {
 
         ApiService apiService = retrofit.create(ApiService.class);
 
+        getRandomMeal(apiService);
+
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            getRandomMeal(apiService);
+            swipeRefreshLayout.setRefreshing(false);
+        });
+    }
+
+    private void getRandomMeal(ApiService apiService){
         Call<RandomMeal> callRandomMeal = apiService.getRandomMeal();
 
         callRandomMeal.enqueue(new Callback<RandomMeal>() {
             @Override
             public void onResponse(Call<RandomMeal> call, Response<RandomMeal> response) {
                 if (response.isSuccessful() && !response.body().getMeals().isEmpty()) {
-                    MealsItem meal = response.body().getMeals().getFirst();
-                    randomMealTitle.setText(meal.getStrMeal());
-
-                    Glide.with(view)
-                            .load(meal.getStrMealThumb())
-                            .transition(DrawableTransitionOptions.withCrossFade())
-                            .placeholder(R.drawable.ic_launcher_foreground)
-                            .into(randomMealImage);
+                    displayRandomMeal(response.body().getMeals().getFirst());
                 }
             }
 
@@ -95,5 +101,15 @@ public class Home extends Fragment {
                 Toast.makeText(getContext(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void displayRandomMeal(MealsItem meal) {
+        randomMealTitle.setText(meal.getStrMeal());
+
+        Glide.with(getContext())
+                .load(meal.getStrMealThumb())
+                .transition(DrawableTransitionOptions.withCrossFade())
+                .placeholder(R.drawable.ic_launcher_foreground)
+                .into(randomMealImage);
     }
 }

@@ -6,4 +6,5 @@
     <color name="on_primary">#ffffffff</color>
     <color name="background_color">#ffffff</color>
     <color name="on_background_color">#ff000000</color>
+    <color name="meal_background_color">#FFC6C9</color>
 </resources>
