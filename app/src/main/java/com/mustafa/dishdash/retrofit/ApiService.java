@@ -13,4 +13,7 @@ public interface ApiService {
 
     @GET("filter.php")
     Call<MealsList> getAllMealsByIngredientName(@Query("i") String ingredient);
+
+    @GET("lookup.php")
+    Call<RandomMeal> getMealById(@Query("i") String id);
 }

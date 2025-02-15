@@ -1,11 +1,16 @@
 package com.mustafa.dishdash.home;
 
+import static android.content.Context.MODE_PRIVATE;
+
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
+import androidx.navigation.ui.NavigationUI;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -25,6 +30,11 @@ import com.mustafa.dishdash.retrofit.models.meals_short_details.MealsList;
 import com.mustafa.dishdash.retrofit.models.random_meal.MealsItem;
 import com.mustafa.dishdash.retrofit.models.random_meal.RandomMeal;
 
+import java.sql.Time;
+import java.time.LocalDate;
+import java.util.Calendar;
+import java.util.Date;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -33,6 +43,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class HomeFragment extends Fragment {
 
+    private static final String DAY_RANDOM_MEAL = "random_meal_of_the_day";
+    private static final String MEAL_ID = "meal_id";
+    private static final String DAY = "day";
     private CardView mealCard;
     private TextView username;
     private ImageView addToCalender;
@@ -42,8 +55,9 @@ public class HomeFragment extends Fragment {
     private SwipeRefreshLayout swipeRefreshLayout;
     private RecyclerView mealsRecyclerView;
 
-    ApiService apiService;
+    private ApiService apiService;
     private String api_url;
+    private String randomMealId;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -75,6 +89,12 @@ public class HomeFragment extends Fragment {
         mealsRecyclerView = view.findViewById(R.id.meals_recycler_view);
 
 
+        if (api_url.isEmpty()) {
+            Toast.makeText(getContext(), "Wrong api url!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+
         addToCalender.setOnClickListener(v -> {
             Toast.makeText(getContext(), "add to calender", Toast.LENGTH_SHORT).show();
         });
@@ -84,13 +104,14 @@ public class HomeFragment extends Fragment {
         });
 
         mealCard.setOnClickListener(v -> {
-            Toast.makeText(getContext(), "go to details screen", Toast.LENGTH_SHORT).show();
-        });
+            if (randomMealId != null && !randomMealId.isEmpty()) {
+                HomeFragmentDirections.ActionHomeFragmentToRecipeDetailsFragment action = HomeFragmentDirections
+                        .actionHomeFragmentToRecipeDetailsFragment(randomMealId);
+                Navigation.findNavController(v).navigate(action);
 
-        if (api_url.isEmpty()) {
-            Toast.makeText(getContext(), "Wrong api url!", Toast.LENGTH_SHORT).show();
-            return;
-        }
+                Toast.makeText(getContext(), "go to details screen", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(api_url)
@@ -99,19 +120,45 @@ public class HomeFragment extends Fragment {
 
         apiService = retrofit.create(ApiService.class);
 
+        SharedPreferences savedRandomMeal = getContext().getSharedPreferences(DAY_RANDOM_MEAL, MODE_PRIVATE);
+        int day = savedRandomMeal.getInt(DAY, -1);
+
+        if (savedRandomMeal.getInt(DAY, -1) == -1 || day != Calendar.getInstance().get(Calendar.DATE)) {
+            getRandomMeal(apiService);
+        } else {
+            getMealById(savedRandomMeal.getString(MEAL_ID, ""), apiService);
+        }
+        getAllMeals(apiService);
+
 
         swipeRefreshLayout.setOnRefreshListener(() -> {
-            getRandomMeal(apiService);
+            int d = savedRandomMeal.getInt(DAY, -1);
+            if (d == -1 || d != Calendar.getInstance().get(Calendar.DATE)) {
+                getRandomMeal(apiService);
+            } else {
+                getMealById(savedRandomMeal.getString(MEAL_ID, ""), apiService);
+            }
             getAllMeals(apiService);
             swipeRefreshLayout.setRefreshing(false);
         });
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        getRandomMeal(apiService);
-        getAllMeals(apiService);
+    private void getMealById(String id, ApiService apiService) {
+        Call<RandomMeal> mealCall = apiService.getMealById(id);
+
+        mealCall.enqueue(new Callback<RandomMeal>() {
+            @Override
+            public void onResponse(Call<RandomMeal> call, Response<RandomMeal> response) {
+                if (response.isSuccessful()) {
+                    displayRandomMeal(response.body().getMeals().get(0));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<RandomMeal> call, Throwable throwable) {
+                Toast.makeText(getContext(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void getAllMeals(ApiService apiService) {
@@ -127,7 +174,7 @@ public class HomeFragment extends Fragment {
 
             @Override
             public void onFailure(Call<MealsList> call, Throwable throwable) {
-
+                Toast.makeText(getContext(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -141,6 +188,13 @@ public class HomeFragment extends Fragment {
                 if (response.isSuccessful() && !response.body().getMeals().isEmpty()) {
                     displayRandomMeal(response.body().getMeals().get(0));
 
+                    randomMealId = response.body().getMeals().get(0).getIdMeal();
+
+                    SharedPreferences todayMeal = getContext().getSharedPreferences(DAY_RANDOM_MEAL, MODE_PRIVATE);
+                    SharedPreferences.Editor editor = todayMeal.edit();
+                    editor.putString(MEAL_ID, randomMealId);
+                    editor.putInt(DAY, Calendar.getInstance().get(Calendar.DATE));
+                    editor.commit();
                 }
             }
 

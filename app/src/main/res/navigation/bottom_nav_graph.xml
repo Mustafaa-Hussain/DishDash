@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/bottom_nav_graph"
     app:startDestination="@id/homeFragment">
@@ -8,16 +8,18 @@
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.mustafa.dishdash.home.HomeFragment"
-        android:label="@string/home" >
+        android:label="@string/home">
         <action
-            android:id="@+id/action_homeFragment_to_recipeDetailsFragment2"
-            app:destination="@id/recipeDetailsFragment" />
+            android:id="@+id/action_homeFragment_to_recipeDetailsFragment"
+            app:destination="@id/recipeDetailsFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim" />
     </fragment>
     <fragment
         android:id="@+id/calenderFragment"
         android:name="com.mustafa.dishdash.home.CalenderFragment"
         android:label="@string/calender"
-        tools:layout="@layout/fragment_calender" >
+        tools:layout="@layout/fragment_calender">
         <action
             android:id="@+id/action_calenderFragment_to_recipeDetailsFragment"
             app:destination="@id/recipeDetailsFragment" />
@@ -26,7 +28,7 @@
         android:id="@+id/searchFragment"
         android:name="com.mustafa.dishdash.home.SearchFragment"
         android:label="@string/search"
-        tools:layout="@layout/fragment_search" >
+        tools:layout="@layout/fragment_search">
         <action
             android:id="@+id/action_searchFragment_to_recipeDetailsFragment"
             app:destination="@id/recipeDetailsFragment" />
@@ -35,7 +37,7 @@
         android:id="@+id/favoritesFragment"
         android:name="com.mustafa.dishdash.home.FavoritesFragment"
         android:label="@string/favorites"
-        tools:layout="@layout/fragment_favorites" >
+        tools:layout="@layout/fragment_favorites">
         <action
             android:id="@+id/action_favoritesFragment_to_recipeDetailsFragment"
             app:destination="@id/recipeDetailsFragment" />
@@ -48,10 +50,10 @@
     <fragment
         android:id="@+id/recipeDetailsFragment"
         android:name="com.mustafa.dishdash.home.RecipeDetailsFragment"
-        android:label="fragment_recipe_details"
-        tools:layout="@layout/fragment_recipe_details" >
+        android:label="@string/recipe_details"
+        tools:layout="@layout/fragment_recipe_details">
         <argument
             android:name="id"
-            app:argType="integer" />
+            app:argType="string" />
     </fragment>
 </navigation>
