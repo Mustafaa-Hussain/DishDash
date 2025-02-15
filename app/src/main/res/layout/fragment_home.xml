@@ -50,8 +50,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="64dp"
+            android:layout_marginTop="16dp"
             android:layout_marginEnd="64dp"
-            app:dividerColor="@color/meal_background_color"
+            android:layout_marginBottom="16dp"
+            app:dividerColor="@color/primary"
             app:layout_constraintBottom_toTopOf="@+id/random_meal_card"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -62,11 +64,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
+            android:elevation="8dp"
             app:cardBackgroundColor="@color/primary"
             app:cardCornerRadius="16dp"
-            android:elevation="8dp"
+            app:cardUseCompatPadding="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/welcome_message">
@@ -143,8 +146,8 @@
             style="@style/text_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/primary"
             android:text="@string/other_recipes"
+            android:textColor="@color/primary"
             app:layout_constraintStart_toStartOf="@+id/random_meal_card"
             app:layout_constraintTop_toBottomOf="@+id/materialDivider" />
 
@@ -164,12 +167,14 @@
             android:id="@+id/meals_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:paddingBottom="8dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
             android:orientation="vertical"
+            android:paddingBottom="8dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/textView"
             app:layout_constraintTop_toBottomOf="@+id/textView" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

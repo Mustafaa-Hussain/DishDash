@@ -8,6 +8,10 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.mustafa.dishdash.R;
@@ -15,12 +19,6 @@ import com.mustafa.dishdash.R;
 public class HomeActivity extends AppCompatActivity {
 
     BottomNavigationView bottomNavigationItemView;
-
-    Fragment homeFragment,
-            searchFragment,
-            favoritesFragment,
-            calenderFragment,
-            profileFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,46 +31,12 @@ public class HomeActivity extends AppCompatActivity {
             return insets;
         });
 
+
         bottomNavigationItemView = findViewById(R.id.bottomNavigationView);
-        bottomNavigationItemView.setSelectedItemId(R.id.action_home);
 
-        homeFragment = new HomeFragment();
-        searchFragment = new SearchFragment();
-        favoritesFragment = new FavoritesFragment();
-        calenderFragment = new CalenderFragment();
-        profileFragment = new ProfileFragment();
-
-        setCurrentFragment(homeFragment);
-
-        bottomNavigationItemView.setOnItemSelectedListener(item -> {
-            switch (item.getItemId()) {
-                case R.id.action_home:
-                    setCurrentFragment(homeFragment);
-                    break;
-                case R.id.action_search:
-                    setCurrentFragment(searchFragment);
-                    break;
-                case R.id.action_favorites:
-                    setCurrentFragment(favoritesFragment);
-                    break;
-                case R.id.action_calender:
-                    setCurrentFragment(calenderFragment);
-                    break;
-                case R.id.action_profile:
-                    setCurrentFragment(profileFragment);
-                    break;
-                default:
-                    return false;
-            }
-            return true;
-        });
-
-    }
-
-    private void setCurrentFragment(Fragment fragment) {
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.fragmentContainerView, fragment)
-                .commit();
+        NavHostFragment navHostFragment = (NavHostFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.fragmentContainerView);
+        NavController controller = navHostFragment.getNavController();
+        NavigationUI.setupWithNavController(bottomNavigationItemView, controller);
     }
 }

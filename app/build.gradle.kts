@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
+    id("androidx.navigation.safeargs")
 }
 
 android {
@@ -51,5 +52,8 @@ dependencies {
     implementation(libs.gson)
 
     implementation(libs.swiperefreshlayout)
+
+    implementation(libs.navigation.fragment)
+    implementation(libs.navigation.ui)
 
 }

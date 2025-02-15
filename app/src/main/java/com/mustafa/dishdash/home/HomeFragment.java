@@ -140,6 +140,7 @@ public class HomeFragment extends Fragment {
             public void onResponse(Call<RandomMeal> call, Response<RandomMeal> response) {
                 if (response.isSuccessful() && !response.body().getMeals().isEmpty()) {
                     displayRandomMeal(response.body().getMeals().get(0));
+
                 }
             }
 
@@ -152,11 +153,12 @@ public class HomeFragment extends Fragment {
 
     private void displayRandomMeal(MealsItem meal) {
         randomMealTitle.setText(meal.getStrMeal());
-
-        Glide.with(getContext())
-                .load(meal.getStrMealThumb())
-                .transition(DrawableTransitionOptions.withCrossFade())
-                .placeholder(R.drawable.ic_launcher_foreground)
-                .into(randomMealImage);
+        if (getContext() != null) {
+            Glide.with(getContext())
+                    .load(meal.getStrMealThumb())
+                    .transition(DrawableTransitionOptions.withCrossFade())
+                    .placeholder(R.drawable.ic_launcher_foreground)
+                    .into(randomMealImage);
+        }
     }
 }

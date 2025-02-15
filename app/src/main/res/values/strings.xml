@@ -14,4 +14,5 @@
     <string name="calender">Calender</string>
     <string name="profile">Profile</string>
     <string name="other_recipes">Other Recipes</string>
+    <string name="details">Details</string>
 </resources>
