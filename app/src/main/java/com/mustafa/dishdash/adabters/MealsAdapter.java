@@ -10,11 +10,13 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.mustafa.dishdash.R;
+import com.mustafa.dishdash.home.HomeFragmentDirections;
 import com.mustafa.dishdash.retrofit.models.meals_short_details.MealShortDetails;
 import com.mustafa.dishdash.retrofit.models.meals_short_details.MealsList;
 
@@ -55,7 +57,9 @@ public class MealsAdapter extends RecyclerView.Adapter<MealsAdapter.ViewHolder> 
         });
 
         holder.mealCard.setOnClickListener(view -> {
-            Toast.makeText(context, "go to details screen", Toast.LENGTH_SHORT).show();
+            HomeFragmentDirections.ActionHomeFragmentToRecipeDetailsFragment action = HomeFragmentDirections
+                    .actionHomeFragmentToRecipeDetailsFragment(mealsList.getMeals().get(position).getIdMeal());
+            Navigation.findNavController(view).navigate(action);
         });
     }
 

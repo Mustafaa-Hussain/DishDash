@@ -9,6 +9,11 @@
         <item name="cornerSize">16dp</item>
     </style>
 
+    <style name="circular_image">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
+    </style>
+
     <style name="text_title">
         <item name="fontFamily">@font/andika_new_basic</item>
         <item name="fontStyle">normal</item>

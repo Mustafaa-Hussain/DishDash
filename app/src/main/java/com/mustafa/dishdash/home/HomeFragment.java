@@ -2,6 +2,11 @@ package com.mustafa.dishdash.home;
 
 import static android.content.Context.MODE_PRIVATE;
 
+import static com.mustafa.dishdash.Constant.API_URL;
+import static com.mustafa.dishdash.Constant.DAY;
+import static com.mustafa.dishdash.Constant.DAY_RANDOM_MEAL;
+import static com.mustafa.dishdash.Constant.MEAL_ID;
+
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -10,7 +15,6 @@ import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
-import androidx.navigation.ui.NavigationUI;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -28,12 +32,9 @@ import com.mustafa.dishdash.adabters.MealsAdapter;
 import com.mustafa.dishdash.retrofit.ApiService;
 import com.mustafa.dishdash.retrofit.models.meals_short_details.MealsList;
 import com.mustafa.dishdash.retrofit.models.random_meal.MealsItem;
-import com.mustafa.dishdash.retrofit.models.random_meal.RandomMeal;
+import com.mustafa.dishdash.retrofit.models.random_meal.Meal;
 
-import java.sql.Time;
-import java.time.LocalDate;
 import java.util.Calendar;
-import java.util.Date;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -43,9 +44,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class HomeFragment extends Fragment {
 
-    private static final String DAY_RANDOM_MEAL = "random_meal_of_the_day";
-    private static final String MEAL_ID = "meal_id";
-    private static final String DAY = "day";
     private CardView mealCard;
     private TextView username;
     private ImageView addToCalender;
@@ -66,7 +64,7 @@ public class HomeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        api_url = getContext().getSharedPreferences("api_url", getContext().MODE_PRIVATE).getString("url", "");
+        api_url = getContext().getSharedPreferences(API_URL, getContext().MODE_PRIVATE).getString("url", "");
     }
 
     @Override
@@ -108,8 +106,6 @@ public class HomeFragment extends Fragment {
                 HomeFragmentDirections.ActionHomeFragmentToRecipeDetailsFragment action = HomeFragmentDirections
                         .actionHomeFragmentToRecipeDetailsFragment(randomMealId);
                 Navigation.findNavController(v).navigate(action);
-
-                Toast.makeText(getContext(), "go to details screen", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -144,18 +140,19 @@ public class HomeFragment extends Fragment {
     }
 
     private void getMealById(String id, ApiService apiService) {
-        Call<RandomMeal> mealCall = apiService.getMealById(id);
+        Call<Meal> mealCall = apiService.getMealById(id);
 
-        mealCall.enqueue(new Callback<RandomMeal>() {
+        mealCall.enqueue(new Callback<Meal>() {
             @Override
-            public void onResponse(Call<RandomMeal> call, Response<RandomMeal> response) {
+            public void onResponse(Call<Meal> call, Response<Meal> response) {
                 if (response.isSuccessful()) {
+                    randomMealId = response.body().getMeals().get(0).getIdMeal();
                     displayRandomMeal(response.body().getMeals().get(0));
                 }
             }
 
             @Override
-            public void onFailure(Call<RandomMeal> call, Throwable throwable) {
+            public void onFailure(Call<Meal> call, Throwable throwable) {
                 Toast.makeText(getContext(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
@@ -180,11 +177,11 @@ public class HomeFragment extends Fragment {
     }
 
     private void getRandomMeal(ApiService apiService) {
-        Call<RandomMeal> callRandomMeal = apiService.getRandomMeal();
+        Call<Meal> callRandomMeal = apiService.getRandomMeal();
 
-        callRandomMeal.enqueue(new Callback<RandomMeal>() {
+        callRandomMeal.enqueue(new Callback<Meal>() {
             @Override
-            public void onResponse(Call<RandomMeal> call, Response<RandomMeal> response) {
+            public void onResponse(Call<Meal> call, Response<Meal> response) {
                 if (response.isSuccessful() && !response.body().getMeals().isEmpty()) {
                     displayRandomMeal(response.body().getMeals().get(0));
 
@@ -194,12 +191,12 @@ public class HomeFragment extends Fragment {
                     SharedPreferences.Editor editor = todayMeal.edit();
                     editor.putString(MEAL_ID, randomMealId);
                     editor.putInt(DAY, Calendar.getInstance().get(Calendar.DATE));
-                    editor.commit();
+                    editor.apply();
                 }
             }
 
             @Override
-            public void onFailure(Call<RandomMeal> call, Throwable throwable) {
+            public void onFailure(Call<Meal> call, Throwable throwable) {
                 Toast.makeText(getContext(), throwable.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });

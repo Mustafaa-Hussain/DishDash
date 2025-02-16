@@ -80,7 +80,7 @@
                 android:padding="8dp">
 
                 <TextView
-                    android:id="@+id/meal_of_the_day"
+                    android:id="@+id/txtMealName"
                     style="@style/text_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -98,7 +98,7 @@
                     android:scaleType="fitXY"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/meal_of_the_day"
+                    app:layout_constraintTop_toBottomOf="@+id/txtMealName"
                     app:shapeAppearanceOverlay="@style/rounded_image_corner"
                     tools:srcCompat="@drawable/default_image" />
 
