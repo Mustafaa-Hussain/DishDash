@@ -14,7 +14,7 @@ import androidx.core.view.WindowInsetsCompat;
 import com.mustafa.dishdash.main.MainActivity;
 
 public class SplashScreen extends AppCompatActivity {
-    private static final int SPLASH_TIME = 3500;
+    private static final int SPLASH_TIME = 3000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,20 +27,11 @@ public class SplashScreen extends AppCompatActivity {
             return insets;
         });
 
-        //saving api url
-        SharedPreferences api_url = getSharedPreferences("api_url", MODE_PRIVATE);
-        SharedPreferences.Editor editor = api_url.edit();
-        editor.putString("url", "https://www.themealdb.com/api/json/v1/1/");
-        editor.apply();
-
         Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Intent intent = new Intent(SplashScreen.this, MainActivity.class);
-                startActivity(intent);
-                SplashScreen.this.finish();
-            }
+        handler.postDelayed(() -> {
+            Intent intent = new Intent(SplashScreen.this, MainActivity.class);
+            startActivity(intent);
+            SplashScreen.this.finish();
         }, SPLASH_TIME);
 
     }

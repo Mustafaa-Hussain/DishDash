@@ -1,4 +1,4 @@
-package com.mustafa.dishdash.main.home.data_layer.network.models.random_meal;
+package com.mustafa.dishdash.main.data_layer.network.pojo.random_meal;
 
 public class MealsItem {
     private String strIngredient10;

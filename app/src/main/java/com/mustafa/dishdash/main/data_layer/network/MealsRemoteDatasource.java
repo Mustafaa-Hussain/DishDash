@@ -1,12 +1,9 @@
-package com.mustafa.dishdash.main.home.data_layer.network;
+package com.mustafa.dishdash.main.data_layer.network;
 
 import static com.mustafa.dishdash.utils.Constant.API_URL;
 
-import android.content.Context;
-
-import com.mustafa.dishdash.main.home.data_layer.network.models.meals_short_details.MealsList;
-import com.mustafa.dishdash.main.home.data_layer.network.models.random_meal.Meal;
-import com.mustafa.dishdash.utils.Constant;
+import com.mustafa.dishdash.main.data_layer.network.pojo.meals_short_details.MealsList;
+import com.mustafa.dishdash.main.data_layer.network.pojo.random_meal.Meal;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -17,14 +14,11 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MealsRemoteDatasource {
 
     private ApiHomeService apiService;
-    private String api_url;
 
-    public MealsRemoteDatasource(Context context) {
-
-        api_url = context.getSharedPreferences(API_URL, Context.MODE_PRIVATE).getString(Constant.URL, "");
+    public MealsRemoteDatasource() {
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(api_url)
+                .baseUrl(API_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 

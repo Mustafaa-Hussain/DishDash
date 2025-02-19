@@ -21,12 +21,12 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.google.android.material.snackbar.Snackbar;
 import com.mustafa.dishdash.R;
-import com.mustafa.dishdash.main.home.data_layer.MealsRepository;
-import com.mustafa.dishdash.main.home.data_layer.network.MealsRemoteDatasource;
-import com.mustafa.dishdash.main.home.data_layer.shared_prefs.TodayMealLocalDatasource;
+import com.mustafa.dishdash.main.data_layer.MealsRepository;
+import com.mustafa.dishdash.main.data_layer.network.MealsRemoteDatasource;
+import com.mustafa.dishdash.main.data_layer.shared_prefs.TodayMealLocalDatasource;
 import com.mustafa.dishdash.main.home.presenter.HomePresenter;
-import com.mustafa.dishdash.main.home.data_layer.network.models.meals_short_details.MealsList;
-import com.mustafa.dishdash.main.home.data_layer.network.models.random_meal.MealsItem;
+import com.mustafa.dishdash.main.data_layer.network.pojo.meals_short_details.MealsList;
+import com.mustafa.dishdash.main.data_layer.network.pojo.random_meal.MealsItem;
 import com.mustafa.dishdash.main.home.view.adabters.MealClickListener;
 import com.mustafa.dishdash.main.home.view.adabters.MealsAdapter;
 
@@ -66,12 +66,12 @@ public class HomeFragment extends Fragment implements HomeView, MealClickListene
         setupUI(view);
         setupClickListener();
 
+        swipeRefreshLayout.setRefreshing(true);
 
         HomePresenter presenter = new HomePresenter(this,
-                MealsRepository.getInstance(new MealsRemoteDatasource(getContext()),
+                MealsRepository.getInstance(new MealsRemoteDatasource(),
                         new TodayMealLocalDatasource(getContext())));
 
-        swipeRefreshLayout.setRefreshing(true);
 
         presenter.getRandomMeal();
         presenter.getAllMeals();
@@ -136,11 +136,13 @@ public class HomeFragment extends Fragment implements HomeView, MealClickListene
     public void randomMealResultSuccess(MealsItem meal) {
         displayRandomMeal(meal);
         randomMealId = meal.getIdMeal();
+        swipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
     public void randomMealResultFail(String errorMessage) {
         Snackbar.make(mealCard, errorMessage, Snackbar.LENGTH_SHORT).show();
+        swipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
@@ -152,17 +154,20 @@ public class HomeFragment extends Fragment implements HomeView, MealClickListene
     @Override
     public void allMealsResultFail(String errorMessage) {
         Snackbar.make(mealCard, errorMessage, Snackbar.LENGTH_SHORT).show();
+        swipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
     public void mealByIdResultSuccess(MealsItem meal) {
         displayRandomMeal(meal);
         randomMealId = meal.getIdMeal();
+        swipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
     public void mealByIdResultFail(String errorMessage) {
         Snackbar.make(mealCard, errorMessage, Snackbar.LENGTH_SHORT).show();
+        swipeRefreshLayout.setRefreshing(false);
     }
 
     @Override

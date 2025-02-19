@@ -1,4 +1,4 @@
-package com.mustafa.dishdash.main.home.data_layer.network.models.meals_short_details;
+package com.mustafa.dishdash.main.data_layer.network.pojo.meals_short_details;
 
 import java.util.List;
 import com.google.gson.annotations.SerializedName;

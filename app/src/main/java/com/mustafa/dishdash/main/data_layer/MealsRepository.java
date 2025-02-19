@@ -1,10 +1,10 @@
-package com.mustafa.dishdash.main.home.data_layer;
+package com.mustafa.dishdash.main.data_layer;
 
-import com.mustafa.dishdash.main.home.data_layer.network.GetAllMealNetworkCallBack;
-import com.mustafa.dishdash.main.home.data_layer.network.GetMealByIdNetworkCallBack;
-import com.mustafa.dishdash.main.home.data_layer.network.MealsRemoteDatasource;
-import com.mustafa.dishdash.main.home.data_layer.network.GetRandomMealNetworkCallBack;
-import com.mustafa.dishdash.main.home.data_layer.shared_prefs.TodayMealLocalDatasource;
+import com.mustafa.dishdash.main.data_layer.network.GetAllMealNetworkCallBack;
+import com.mustafa.dishdash.main.data_layer.network.GetMealByIdNetworkCallBack;
+import com.mustafa.dishdash.main.data_layer.network.MealsRemoteDatasource;
+import com.mustafa.dishdash.main.data_layer.network.GetRandomMealNetworkCallBack;
+import com.mustafa.dishdash.main.data_layer.shared_prefs.TodayMealLocalDatasource;
 
 public class MealsRepository {
     private static MealsRepository instance;

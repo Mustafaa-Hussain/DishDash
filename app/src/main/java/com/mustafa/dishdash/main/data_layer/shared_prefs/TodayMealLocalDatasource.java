@@ -1,4 +1,4 @@
-package com.mustafa.dishdash.main.home.data_layer.shared_prefs;
+package com.mustafa.dishdash.main.data_layer.shared_prefs;
 
 import android.content.Context;
 import android.content.SharedPreferences;

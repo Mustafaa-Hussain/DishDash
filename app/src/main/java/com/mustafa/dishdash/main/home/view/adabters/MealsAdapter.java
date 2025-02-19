@@ -6,21 +6,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
-import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.mustafa.dishdash.R;
-import com.mustafa.dishdash.main.home.data_layer.network.models.meals_short_details.MealShortDetails;
-import com.mustafa.dishdash.main.home.data_layer.network.models.meals_short_details.MealsList;
-import com.mustafa.dishdash.main.home.view.HomeFragmentDirections;
-
-import java.util.ArrayList;
+import com.mustafa.dishdash.main.data_layer.network.pojo.meals_short_details.MealShortDetails;
+import com.mustafa.dishdash.main.data_layer.network.pojo.meals_short_details.MealsList;
 
 public class MealsAdapter extends RecyclerView.Adapter<MealsAdapter.ViewHolder> {
     private MealsList mealsList;

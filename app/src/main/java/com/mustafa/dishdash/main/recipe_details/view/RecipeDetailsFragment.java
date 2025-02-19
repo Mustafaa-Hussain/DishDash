@@ -1,10 +1,9 @@
 package com.mustafa.dishdash.main.recipe_details.view;
 
-import static android.content.Context.MODE_PRIVATE;
 import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 import static android.widget.Toast.LENGTH_SHORT;
 import static com.mustafa.dishdash.utils.Constant.API_URL;
-import static com.mustafa.dishdash.utils.Constant.URL;
 import static com.mustafa.dishdash.utils.Constant.ingredientImageUrl;
 
 import android.os.Bundle;
@@ -25,10 +24,15 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
+import com.google.android.material.snackbar.Snackbar;
 import com.mustafa.dishdash.R;
-import com.mustafa.dishdash.main.home.data_layer.network.ApiHomeService;
-import com.mustafa.dishdash.main.home.data_layer.network.models.random_meal.Meal;
-import com.mustafa.dishdash.main.home.data_layer.network.models.random_meal.MealsItem;
+import com.mustafa.dishdash.main.data_layer.MealsRepository;
+import com.mustafa.dishdash.main.data_layer.network.ApiHomeService;
+import com.mustafa.dishdash.main.data_layer.network.MealsRemoteDatasource;
+import com.mustafa.dishdash.main.data_layer.network.pojo.random_meal.Meal;
+import com.mustafa.dishdash.main.data_layer.network.pojo.random_meal.MealsItem;
+import com.mustafa.dishdash.main.data_layer.shared_prefs.TodayMealLocalDatasource;
+import com.mustafa.dishdash.main.recipe_details.presenter.RecipeDetailsPresenter;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView;
@@ -39,7 +43,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class RecipeDetailsFragment extends Fragment {
+public class RecipeDetailsFragment extends Fragment implements RecipeDetailsView {
 
     private TextView txtMealName, instructions;
     private ChipGroup mealCategories;
@@ -49,8 +53,6 @@ public class RecipeDetailsFragment extends Fragment {
     private YouTubePlayerView youTubePlayerView;
 
 
-    private String api_url;
-
     public RecipeDetailsFragment() {
         // Required empty public constructor
     }
@@ -58,7 +60,6 @@ public class RecipeDetailsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        api_url = getContext().getSharedPreferences(API_URL, MODE_PRIVATE).getString(URL, "");
     }
 
     @Override
@@ -80,39 +81,26 @@ public class RecipeDetailsFragment extends Fragment {
         linearLayout = view.findViewById(R.id.ingredients_container);
         youTubePlayerView = view.findViewById(R.id.youtube_player_view);
         getLifecycle().addObserver(youTubePlayerView);
-    }
 
+        String id = RecipeDetailsFragmentArgs.fromBundle(getArguments()).getId();
+
+        RecipeDetailsPresenter presenter = new RecipeDetailsPresenter(this,
+                MealsRepository.getInstance(new MealsRemoteDatasource(), new TodayMealLocalDatasource(getContext())));
+
+        presenter.getMealById(id);
+
+    }
 
     @Override
     public void onResume() {
         super.onResume();
-        String id = RecipeDetailsFragmentArgs.fromBundle(getArguments()).getId();
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(api_url)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        ApiHomeService apiService = retrofit.create(ApiHomeService.class);
-
-        getMealById(id, apiService);
+        getActivity().findViewById(R.id.bottomNavigationView).setVisibility(GONE);
     }
 
-    private void getMealById(String id, ApiHomeService apiService) {
-        Call<Meal> callMeal = apiService.getMealById(id);
-        callMeal.enqueue(new Callback<Meal>() {
-            @Override
-            public void onResponse(Call<Meal> call, Response<Meal> response) {
-                if (response.isSuccessful()) {
-                    displayMealDetails(response.body().getMeals().get(0));
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Meal> call, Throwable throwable) {
-                Toast.makeText(getContext(), throwable.getMessage(), LENGTH_SHORT).show();
-            }
-        });
+    @Override
+    public void onStop() {
+        super.onStop();
+        getActivity().findViewById(R.id.bottomNavigationView).setVisibility(VISIBLE);
     }
 
     private void displayMealDetails(MealsItem mealItem) {
@@ -138,6 +126,8 @@ public class RecipeDetailsFragment extends Fragment {
             });
 
             displayIngredients(mealItem);
+
+
             if (!mealItem.getStrYoutube().isEmpty()) {
                 youTubePlayerView.addYouTubePlayerListener(new AbstractYouTubePlayerListener() {
                     @Override
@@ -206,7 +196,16 @@ public class RecipeDetailsFragment extends Fragment {
     private void addChipToGroup(String text) {
         Chip chip = new Chip(getContext());
         chip.setText(text);
-//        chip.//edit chip icon from api
         mealCategories.addView(chip);
+    }
+
+    @Override
+    public void recipeDetailsResponseSuccess(MealsItem mealsItem) {
+        displayMealDetails(mealsItem);
+    }
+
+    @Override
+    public void recipeDetailsResponseFail(String errorMessage) {
+        Snackbar.make(this.getView(), errorMessage, Snackbar.LENGTH_SHORT).show();
     }
 }
