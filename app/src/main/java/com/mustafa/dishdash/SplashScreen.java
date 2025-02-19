@@ -11,7 +11,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.mustafa.dishdash.home.HomeActivity;
+import com.mustafa.dishdash.main.MainActivity;
 
 public class SplashScreen extends AppCompatActivity {
     private static final int SPLASH_TIME = 3500;
@@ -37,7 +37,7 @@ public class SplashScreen extends AppCompatActivity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                Intent intent = new Intent(SplashScreen.this, HomeActivity.class);
+                Intent intent = new Intent(SplashScreen.this, MainActivity.class);
                 startActivity(intent);
                 SplashScreen.this.finish();
             }
