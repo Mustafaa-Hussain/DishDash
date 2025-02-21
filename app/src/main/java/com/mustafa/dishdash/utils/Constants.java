@@ -1,6 +1,6 @@
 package com.mustafa.dishdash.utils;
 
-public class Constant {
+public class Constants {
 
     public static final String DAY_RANDOM_MEAL = "random_meal_of_the_day";
     public static final String MEAL_ID = "meal_id";

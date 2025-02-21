@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     id("androidx.navigation.safeargs")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -56,6 +57,10 @@ dependencies {
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
 
-    implementation ("com.pierfrancescosoffritti.androidyoutubeplayer:core:12.1.1")
+    implementation(libs.core)
 
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.com.google.firebase.firebase.auth)
+    implementation(libs.play.services.auth)
 }

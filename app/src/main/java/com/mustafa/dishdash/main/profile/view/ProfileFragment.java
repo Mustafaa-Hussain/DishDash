@@ -10,8 +10,10 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.mustafa.dishdash.R;
 import com.mustafa.dishdash.auth.Authentication;
 
@@ -41,5 +43,8 @@ public class ProfileFragment extends Fragment {
             Intent intent = new Intent(this.getActivity(), Authentication.class);
             startActivity(intent);
         });
+
+        Button signOut = view.findViewById(R.id.sign_out);
+        signOut.setOnClickListener(v-> FirebaseAuth.getInstance().signOut());
     }
 }

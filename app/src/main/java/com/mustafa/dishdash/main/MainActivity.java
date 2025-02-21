@@ -1,6 +1,7 @@
 package com.mustafa.dishdash.main;
 
 import android.os.Bundle;
+import android.view.Window;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -36,5 +37,8 @@ public class MainActivity extends AppCompatActivity {
                 .findFragmentById(R.id.fragmentContainerView);
         NavController controller = navHostFragment.getNavController();
         NavigationUI.setupWithNavController(bottomNavigationItemView, controller);
+
+        getWindow().setStatusBarColor(getColor(R.color.primary));
+
     }
 }

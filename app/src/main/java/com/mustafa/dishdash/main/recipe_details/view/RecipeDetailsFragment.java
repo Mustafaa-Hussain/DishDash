@@ -3,8 +3,7 @@ package com.mustafa.dishdash.main.recipe_details.view;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static android.widget.Toast.LENGTH_SHORT;
-import static com.mustafa.dishdash.utils.Constant.API_URL;
-import static com.mustafa.dishdash.utils.Constant.ingredientImageUrl;
+import static com.mustafa.dishdash.utils.Constants.ingredientImageUrl;
 
 import android.os.Bundle;
 
@@ -12,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,9 +27,7 @@ import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.snackbar.Snackbar;
 import com.mustafa.dishdash.R;
 import com.mustafa.dishdash.main.data_layer.MealsRepository;
-import com.mustafa.dishdash.main.data_layer.network.ApiHomeService;
 import com.mustafa.dishdash.main.data_layer.network.MealsRemoteDatasource;
-import com.mustafa.dishdash.main.data_layer.network.pojo.random_meal.Meal;
 import com.mustafa.dishdash.main.data_layer.network.pojo.random_meal.MealsItem;
 import com.mustafa.dishdash.main.data_layer.shared_prefs.TodayMealLocalDatasource;
 import com.mustafa.dishdash.main.recipe_details.presenter.RecipeDetailsPresenter;
@@ -37,11 +35,8 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RecipeDetailsFragment extends Fragment implements RecipeDetailsView {
 
@@ -72,14 +67,8 @@ public class RecipeDetailsFragment extends Fragment implements RecipeDetailsView
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        txtMealName = view.findViewById(R.id.txtMealName);
-        instructions = view.findViewById(R.id.meal_instructions);
-        mealCategories = view.findViewById(R.id.meal_tags);
-        addToCalender = view.findViewById(R.id.add_to_calender);
-        addToFavorites = view.findViewById(R.id.add_to_favorite);
-        mealImage = view.findViewById(R.id.instructions_image);
-        linearLayout = view.findViewById(R.id.ingredients_container);
-        youTubePlayerView = view.findViewById(R.id.youtube_player_view);
+        setupUI(view);
+
         getLifecycle().addObserver(youTubePlayerView);
 
         String id = RecipeDetailsFragmentArgs.fromBundle(getArguments()).getId();
@@ -88,7 +77,17 @@ public class RecipeDetailsFragment extends Fragment implements RecipeDetailsView
                 MealsRepository.getInstance(new MealsRemoteDatasource(), new TodayMealLocalDatasource(getContext())));
 
         presenter.getMealById(id);
+    }
 
+    private void setupUI(View view) {
+        txtMealName = view.findViewById(R.id.txtMealName);
+        instructions = view.findViewById(R.id.meal_instructions);
+        mealCategories = view.findViewById(R.id.meal_tags);
+        addToCalender = view.findViewById(R.id.add_to_calender);
+        addToFavorites = view.findViewById(R.id.add_to_favorite);
+        mealImage = view.findViewById(R.id.instructions_image);
+        linearLayout = view.findViewById(R.id.ingredients_container);
+        youTubePlayerView = view.findViewById(R.id.youtube_player_view);
     }
 
     @Override
@@ -103,7 +102,7 @@ public class RecipeDetailsFragment extends Fragment implements RecipeDetailsView
         getActivity().findViewById(R.id.bottomNavigationView).setVisibility(VISIBLE);
     }
 
-    private void displayMealDetails(MealsItem mealItem) {
+    private void displayMealDetails(MealsItem mealItem, List<Pair<String, String>> ingredients) {
         if (getContext() != null) {
             txtMealName.setText(mealItem.getStrMeal());
             instructions.setText(mealItem.getStrInstructions());
@@ -118,6 +117,7 @@ public class RecipeDetailsFragment extends Fragment implements RecipeDetailsView
                     .placeholder(R.drawable.broken_image)
                     .into(mealImage);
 
+
             addToCalender.setOnClickListener(view -> {
                 Toast.makeText(getContext(), "add to calender", LENGTH_SHORT).show();
             });
@@ -125,7 +125,9 @@ public class RecipeDetailsFragment extends Fragment implements RecipeDetailsView
                 Toast.makeText(getContext(), "add to favorite", LENGTH_SHORT).show();
             });
 
-            displayIngredients(mealItem);
+            ingredients.forEach((item) -> {
+                addIngredient(item.first, item.second);
+            });
 
 
             if (!mealItem.getStrYoutube().isEmpty()) {
@@ -145,32 +147,6 @@ public class RecipeDetailsFragment extends Fragment implements RecipeDetailsView
                 youTubePlayerView.setVisibility(GONE);
             }
         }
-    }
-
-    private void displayIngredients(MealsItem mealItem) {
-        linearLayout.removeAllViews();
-
-        addIngredient(mealItem.getStrIngredient1(), mealItem.getStrMeasure1());
-        addIngredient(mealItem.getStrIngredient2(), mealItem.getStrMeasure2());
-        addIngredient(mealItem.getStrIngredient3(), mealItem.getStrMeasure3());
-        addIngredient(mealItem.getStrIngredient4(), mealItem.getStrMeasure4());
-        addIngredient(mealItem.getStrIngredient5(), mealItem.getStrMeasure5());
-        addIngredient(mealItem.getStrIngredient6(), mealItem.getStrMeasure6());
-        addIngredient(mealItem.getStrIngredient7(), mealItem.getStrMeasure7());
-        addIngredient(mealItem.getStrIngredient8(), mealItem.getStrMeasure8());
-        addIngredient(mealItem.getStrIngredient9(), mealItem.getStrMeasure9());
-        addIngredient(mealItem.getStrIngredient10(), mealItem.getStrMeasure10());
-
-        addIngredient(mealItem.getStrIngredient11(), mealItem.getStrMeasure12());
-        addIngredient(mealItem.getStrIngredient12(), mealItem.getStrMeasure12());
-        addIngredient(mealItem.getStrIngredient13(), mealItem.getStrMeasure13());
-        addIngredient(mealItem.getStrIngredient14(), mealItem.getStrMeasure14());
-        addIngredient(mealItem.getStrIngredient15(), mealItem.getStrMeasure15());
-        addIngredient(mealItem.getStrIngredient16(), mealItem.getStrMeasure16());
-        addIngredient(mealItem.getStrIngredient17(), mealItem.getStrMeasure17());
-        addIngredient(mealItem.getStrIngredient18(), mealItem.getStrMeasure18());
-        addIngredient(mealItem.getStrIngredient19(), mealItem.getStrMeasure19());
-        addIngredient(mealItem.getStrIngredient20(), mealItem.getStrMeasure20());
     }
 
     private void addIngredient(String ingredientTitle, String ingredientMeasurement) {
@@ -200,8 +176,8 @@ public class RecipeDetailsFragment extends Fragment implements RecipeDetailsView
     }
 
     @Override
-    public void recipeDetailsResponseSuccess(MealsItem mealsItem) {
-        displayMealDetails(mealsItem);
+    public void recipeDetailsResponseSuccess(MealsItem mealsItem, List<Pair<String, String>> ingredients) {
+        displayMealDetails(mealsItem, ingredients);
     }
 
     @Override

@@ -20,6 +20,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.FirebaseAuth;
 import com.mustafa.dishdash.R;
 import com.mustafa.dishdash.main.data_layer.MealsRepository;
 import com.mustafa.dishdash.main.data_layer.network.MealsRemoteDatasource;
@@ -71,6 +72,9 @@ public class HomeFragment extends Fragment implements HomeView, MealClickListene
         HomePresenter presenter = new HomePresenter(this,
                 MealsRepository.getInstance(new MealsRemoteDatasource(),
                         new TodayMealLocalDatasource(getContext())));
+
+        if (FirebaseAuth.getInstance().getCurrentUser() != null)
+            username.setText(FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
 
 
         presenter.getRandomMeal();

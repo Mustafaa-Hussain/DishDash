@@ -4,8 +4,6 @@
     <string name="welcome_message">What are you cooking today</string>
     <string name="add_to_favorites">add to favorites</string>
     <string name="add_to_calender">add to calender</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="guest">[ Guest ]</string>
     <string name="meal_of_the_day">Meal of the Day</string>
     <string name="home">Home</string>
@@ -32,4 +30,12 @@
     <string name="google">Google</string>
     <string name="or_login_with">Or Login with</string>
     <string name="does_not_have_account">Does not have account?</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="fill_email">Fill email!</string>
+    <string name="not_valid_email_address">Not valid Email Address!</string>
+    <string name="fill_password">Fill password!</string>
+    <string name="short_password_length">Short password length!</string>
+    <string name="password_not_matches">Password not matches</string>
+    <string name="fill_username">Fill Username!</string>
+    <string name="fill_confirm_password">Fill confirm password</string>
 </resources>

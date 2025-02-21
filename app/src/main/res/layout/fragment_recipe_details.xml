@@ -121,6 +121,7 @@
             app:layout_constraintStart_toStartOf="@+id/meal_tags"
             app:layout_constraintTop_toBottomOf="@+id/meal_instructions" />
 
+
         <LinearLayout
             android:id="@+id/ingredients_container"
             android:layout_width="0dp"
