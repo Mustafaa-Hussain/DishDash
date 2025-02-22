@@ -92,9 +92,17 @@ public class UserRemoteDatasource {
         return mAuth.getCurrentUser() != null;
     }
 
-    public String getCurrentAuthenticated() {
+    public String getCurrentAuthenticatedUsername() {
         if (isAuthenticated()) {
             return mAuth.getCurrentUser().getDisplayName();
+        } else {
+            return null;
+        }
+    }
+
+    public String getCurrentAuthenticatedUserEmail() {
+        if (isAuthenticated()) {
+            return mAuth.getCurrentUser().getEmail();
         } else {
             return null;
         }

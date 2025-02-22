@@ -1,6 +1,6 @@
 package com.mustafa.dishdash.main.data_layer.network;
 
-import com.mustafa.dishdash.main.data_layer.network.pojo.random_meal.MealsItem;
+import com.mustafa.dishdash.main.data_layer.pojo.random_meal.MealsItem;
 
 public interface GetRandomMealNetworkCallBack {
     void onRandomMealCallSuccess(MealsItem meal);

@@ -67,6 +67,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
             android:elevation="8dp"
+            android:transitionName="fade"
             app:cardBackgroundColor="@color/primary"
             app:cardCornerRadius="16dp"
             app:cardUseCompatPadding="true"
@@ -93,7 +94,7 @@
                 <com.google.android.material.imageview.ShapeableImageView
                     android:id="@+id/random_meal_image"
                     android:layout_width="match_parent"
-                    android:layout_height="180dp"
+                    android:layout_height="200dp"
                     android:layout_marginTop="8dp"
                     android:scaleType="fitXY"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -102,16 +103,6 @@
                     app:shapeAppearanceOverlay="@style/rounded_image_corner"
                     tools:srcCompat="@drawable/default_image" />
 
-                <ImageView
-                    android:id="@+id/add_to_favorite"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:contentDescription="@string/add_to_favorites"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/random_meal_image"
-                    app:srcCompat="@drawable/add_to_favorite" />
 
                 <TextView
                     android:id="@+id/random_meal_title"
@@ -131,16 +122,6 @@
                     app:layout_constraintTop_toBottomOf="@+id/random_meal_image"
                     tools:text="Salami and cheese pizza" />
 
-                <ImageView
-                    android:id="@+id/add_to_calender"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
-                    android:contentDescription="@string/add_to_calender"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/random_meal_image"
-                    app:srcCompat="@drawable/add_to_calendar" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -168,15 +149,14 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/random_meal_card" />
 
-        <androidx.recyclerview.widget.RecyclerView
+        <com.jackandphantom.carouselrecyclerview.CarouselRecyclerview
             android:id="@+id/meals_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
-            android:orientation="horizontal"
             android:paddingBottom="8dp"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/meal_card_item"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/textView"
             app:layout_constraintTop_toBottomOf="@+id/textView" />

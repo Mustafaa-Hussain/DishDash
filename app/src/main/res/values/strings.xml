@@ -38,4 +38,11 @@
     <string name="password_not_matches">Password not matches</string>
     <string name="fill_username">Fill Username!</string>
     <string name="fill_confirm_password">Fill confirm password</string>
+    <string name="added_to_favorites">Added to Favorites</string>
+    <string name="you_are_not_logged_in">You are not logged in!</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="you_are_not_connected">You are not Connected</string>
+    <string name="are_sure_you_want_to_remove_this_meal_from_favorites">Are sure you want to remove this meal from favorites!</string>
+    <string name="remove">Remove</string>
+    <string name="cancel">Cancel</string>
 </resources>

@@ -15,7 +15,7 @@ import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.mustafa.dishdash.R;
-import com.mustafa.dishdash.auth.Authentication;
+import com.mustafa.dishdash.auth.AuthenticationActivity;
 
 public class ProfileFragment extends Fragment {
 
@@ -40,7 +40,7 @@ public class ProfileFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         TextView textView = view.findViewById(R.id.profile);
         textView.setOnClickListener(v -> {
-            Intent intent = new Intent(this.getActivity(), Authentication.class);
+            Intent intent = new Intent(this.getActivity(), AuthenticationActivity.class);
             startActivity(intent);
         });
 

@@ -10,7 +10,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.mustafa.dishdash.R;
 
-public class Authentication extends AppCompatActivity {
+public class AuthenticationActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

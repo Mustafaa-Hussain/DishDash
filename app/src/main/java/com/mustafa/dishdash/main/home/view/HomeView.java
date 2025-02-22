@@ -1,7 +1,7 @@
 package com.mustafa.dishdash.main.home.view;
 
-import com.mustafa.dishdash.main.data_layer.network.pojo.meals_short_details.MealsList;
-import com.mustafa.dishdash.main.data_layer.network.pojo.random_meal.MealsItem;
+import com.mustafa.dishdash.main.data_layer.pojo.meals_short_details.MealsList;
+import com.mustafa.dishdash.main.data_layer.pojo.random_meal.MealsItem;
 
 public interface HomeView {
     void allMealsResultSuccess(MealsList meal);

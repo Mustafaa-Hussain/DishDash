@@ -2,8 +2,8 @@ package com.mustafa.dishdash.main.data_layer.network;
 
 import static com.mustafa.dishdash.utils.Constants.API_URL;
 
-import com.mustafa.dishdash.main.data_layer.network.pojo.meals_short_details.MealsList;
-import com.mustafa.dishdash.main.data_layer.network.pojo.random_meal.Meal;
+import com.mustafa.dishdash.main.data_layer.pojo.meals_short_details.MealsList;
+import com.mustafa.dishdash.main.data_layer.pojo.random_meal.Meal;
 
 import retrofit2.Call;
 import retrofit2.Callback;

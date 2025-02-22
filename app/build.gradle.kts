@@ -63,4 +63,9 @@ dependencies {
     implementation(libs.firebase.analytics)
     implementation(libs.com.google.firebase.firebase.auth)
     implementation(libs.play.services.auth)
+
+    implementation(libs.room.runtime)
+    annotationProcessor(libs.room.compiler)
+
+    implementation (libs.carouselrecyclerview)
 }

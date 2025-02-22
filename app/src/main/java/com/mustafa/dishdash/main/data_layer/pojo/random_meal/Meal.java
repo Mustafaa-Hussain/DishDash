@@ -1,4 +1,4 @@
-package com.mustafa.dishdash.main.data_layer.network.pojo.random_meal;
+package com.mustafa.dishdash.main.data_layer.pojo.random_meal;
 
 import java.util.List;
 

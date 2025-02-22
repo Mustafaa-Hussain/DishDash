@@ -4,8 +4,8 @@ import com.mustafa.dishdash.main.data_layer.MealsRepository;
 import com.mustafa.dishdash.main.data_layer.network.GetAllMealNetworkCallBack;
 import com.mustafa.dishdash.main.data_layer.network.GetMealByIdNetworkCallBack;
 import com.mustafa.dishdash.main.data_layer.network.GetRandomMealNetworkCallBack;
-import com.mustafa.dishdash.main.data_layer.network.pojo.meals_short_details.MealsList;
-import com.mustafa.dishdash.main.data_layer.network.pojo.random_meal.MealsItem;
+import com.mustafa.dishdash.main.data_layer.pojo.meals_short_details.MealsList;
+import com.mustafa.dishdash.main.data_layer.pojo.random_meal.MealsItem;
 import com.mustafa.dishdash.main.home.view.HomeView;
 
 import java.util.Calendar;

@@ -1,7 +1,7 @@
 package com.mustafa.dishdash.main.data_layer.network;
 
-import com.mustafa.dishdash.main.data_layer.network.pojo.random_meal.Meal;
-import com.mustafa.dishdash.main.data_layer.network.pojo.meals_short_details.MealsList;
+import com.mustafa.dishdash.main.data_layer.pojo.random_meal.Meal;
+import com.mustafa.dishdash.main.data_layer.pojo.meals_short_details.MealsList;
 
 import retrofit2.Call;
 import retrofit2.http.GET;

@@ -38,7 +38,11 @@ public class AuthRepository {
     }
 
     public String getCurrentAuthenticatedUsername() {
-        return remoteDatasource.getCurrentAuthenticated();
+        return remoteDatasource.getCurrentAuthenticatedUsername();
+    }
+
+    public String getCurrentAuthenticatedUserEmail() {
+        return remoteDatasource.getCurrentAuthenticatedUserEmail();
     }
 
 }

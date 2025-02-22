@@ -15,19 +15,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
+import com.jackandphantom.carouselrecyclerview.CarouselRecyclerview;
 import com.mustafa.dishdash.R;
 import com.mustafa.dishdash.main.data_layer.MealsRepository;
+import com.mustafa.dishdash.main.data_layer.db.FavoritesMealsDB;
+import com.mustafa.dishdash.main.data_layer.db.FavoritesMealsLocalDatasource;
 import com.mustafa.dishdash.main.data_layer.network.MealsRemoteDatasource;
 import com.mustafa.dishdash.main.data_layer.shared_prefs.TodayMealLocalDatasource;
 import com.mustafa.dishdash.main.home.presenter.HomePresenter;
-import com.mustafa.dishdash.main.data_layer.network.pojo.meals_short_details.MealsList;
-import com.mustafa.dishdash.main.data_layer.network.pojo.random_meal.MealsItem;
+import com.mustafa.dishdash.main.data_layer.pojo.meals_short_details.MealsList;
+import com.mustafa.dishdash.main.data_layer.pojo.random_meal.MealsItem;
 import com.mustafa.dishdash.main.home.view.adabters.MealClickListener;
 import com.mustafa.dishdash.main.home.view.adabters.MealsAdapter;
 
@@ -36,15 +38,14 @@ public class HomeFragment extends Fragment implements HomeView, MealClickListene
 
     private CardView mealCard;
     private TextView username;
-    private ImageView addToCalender;
-    private ImageView addToFavorites;
     private ImageView randomMealImage;
     private TextView randomMealTitle;
     private SwipeRefreshLayout swipeRefreshLayout;
-    private RecyclerView mealsRecyclerView;
+    private CarouselRecyclerview mealsRecyclerView;
     private MealsAdapter adapter;
 
     private String randomMealId;
+    private HomePresenter presenter;
 
     public HomeFragment() {
     }
@@ -69,9 +70,10 @@ public class HomeFragment extends Fragment implements HomeView, MealClickListene
 
         swipeRefreshLayout.setRefreshing(true);
 
-        HomePresenter presenter = new HomePresenter(this,
+        presenter = new HomePresenter(this,
                 MealsRepository.getInstance(new MealsRemoteDatasource(),
-                        new TodayMealLocalDatasource(getContext())));
+                        new TodayMealLocalDatasource(getContext()),
+                        new FavoritesMealsLocalDatasource(getContext())));
 
         if (FirebaseAuth.getInstance().getCurrentUser() != null)
             username.setText(FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
@@ -93,8 +95,6 @@ public class HomeFragment extends Fragment implements HomeView, MealClickListene
 
         mealCard = view.findViewById(R.id.random_meal_card);
         username = view.findViewById(R.id.username);
-        addToCalender = view.findViewById(R.id.add_to_calender);
-        addToFavorites = view.findViewById(R.id.add_to_favorite);
         randomMealImage = view.findViewById(R.id.random_meal_image);
         randomMealTitle = view.findViewById(R.id.random_meal_title);
         swipeRefreshLayout = view.findViewById(R.id.refresh_layout);
@@ -102,14 +102,6 @@ public class HomeFragment extends Fragment implements HomeView, MealClickListene
     }
 
     private void setupClickListener() {
-        addToCalender.setOnClickListener(v -> {
-            onClickAddToCalender("id");
-        });
-
-        addToFavorites.setOnClickListener(v -> {
-            onClickAddToFavorites("id");
-        });
-
         //go to details screen
         mealCard.setOnClickListener(v -> {
             if (randomMealId != null && !randomMealId.isEmpty()) {
@@ -151,8 +143,12 @@ public class HomeFragment extends Fragment implements HomeView, MealClickListene
 
     @Override
     public void allMealsResultSuccess(MealsList meal) {
-        adapter.setMealsList(meal);
         swipeRefreshLayout.setRefreshing(false);
+
+        adapter.setMealsList(meal);
+        mealsRecyclerView.set3DItem(true);
+        mealsRecyclerView.setAlpha(true);
+        mealsRecyclerView.setInfinite(true);
     }
 
     @Override
@@ -177,15 +173,5 @@ public class HomeFragment extends Fragment implements HomeView, MealClickListene
     @Override
     public void onItemClick(String id) {
         gotoDetailsPage(id);
-    }
-
-    @Override
-    public void onClickAddToFavorites(String id) {
-        Toast.makeText(getContext(), "add to favorites", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onClickAddToCalender(String id) {
-        Toast.makeText(getContext(), "add to calender", Toast.LENGTH_SHORT).show();
     }
 }
