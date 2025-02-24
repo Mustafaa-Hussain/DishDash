@@ -137,7 +137,7 @@ public class HomeFragment extends Fragment implements HomeView, MealClickListene
 
     @Override
     public void randomMealResultFail(String errorMessage) {
-        Snackbar.make(mealCard, errorMessage, Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(mealCard, R.string.you_are_not_connected, Snackbar.LENGTH_SHORT).show();
         swipeRefreshLayout.setRefreshing(false);
     }
 
@@ -153,7 +153,7 @@ public class HomeFragment extends Fragment implements HomeView, MealClickListene
 
     @Override
     public void allMealsResultFail(String errorMessage) {
-        Snackbar.make(mealCard, errorMessage, Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(mealCard, R.string.you_are_not_connected, Snackbar.LENGTH_SHORT).show();
         swipeRefreshLayout.setRefreshing(false);
     }
 
@@ -166,7 +166,7 @@ public class HomeFragment extends Fragment implements HomeView, MealClickListene
 
     @Override
     public void mealByIdResultFail(String errorMessage) {
-        Snackbar.make(mealCard, errorMessage, Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(mealCard, R.string.you_are_not_connected, Snackbar.LENGTH_SHORT).show();
         swipeRefreshLayout.setRefreshing(false);
     }
 

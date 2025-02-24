@@ -45,4 +45,8 @@
     <string name="are_sure_you_want_to_remove_this_meal_from_favorites">Are sure you want to remove this meal from favorites!</string>
     <string name="remove">Remove</string>
     <string name="cancel">Cancel</string>
+    <string name="favorite_meal_removed">Favorite Meal Removed!</string>
+    <string name="adding_to_favorite_error">Adding to Favorite Error!</string>
+    <string name="failed_to_remove_favorite_meal">Failed to remove Favorite Meal!</string>
+    <string name="there_are_no_favorite_meals">There are no Favorite Meals!</string>
 </resources>

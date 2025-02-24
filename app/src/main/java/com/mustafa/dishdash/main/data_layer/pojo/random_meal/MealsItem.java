@@ -3,12 +3,16 @@ package com.mustafa.dishdash.main.data_layer.pojo.random_meal;
 import android.util.Pair;
 
 import androidx.annotation.NonNull;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Entity(tableName = "favorites_meals")
 public class MealsItem {
     @NonNull
+    @PrimaryKey
     private String idMeal;
     private String strMeal;
     private String strArea;
@@ -61,7 +65,9 @@ public class MealsItem {
     private String strMeasure19;
     private String strMeasure20;
 
-    public MealsItem(){}
+    public MealsItem() {
+    }
+
     public MealsItem(MealsItem meal) {
         this.idMeal = meal.idMeal;
         this.strMeal = meal.strMeal;

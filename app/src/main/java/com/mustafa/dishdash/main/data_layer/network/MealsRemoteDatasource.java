@@ -5,6 +5,8 @@ import static com.mustafa.dishdash.utils.Constants.API_URL;
 import com.mustafa.dishdash.main.data_layer.pojo.meals_short_details.MealsList;
 import com.mustafa.dishdash.main.data_layer.pojo.random_meal.Meal;
 
+import hu.akarnokd.rxjava3.retrofit.RxJava3CallAdapterFactory;
+import io.reactivex.rxjava3.core.Single;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -20,67 +22,21 @@ public class MealsRemoteDatasource {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(API_URL)
                 .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
                 .build();
 
         apiService = retrofit.create(ApiHomeService.class);
     }
 
-    public void getRandomMeal(GetRandomMealNetworkCallBack randomMealNetworkCallBack) {
-        Call<Meal> callRandomMeal = apiService.getRandomMeal();
-
-        callRandomMeal.enqueue(new Callback<Meal>() {
-            @Override
-            public void onResponse(Call<Meal> call, Response<Meal> response) {
-                if (response.isSuccessful() && !response.body().getMeals().isEmpty()) {
-                    randomMealNetworkCallBack.onRandomMealCallSuccess(response.body().getMeals().get(0));
-                } else {
-                    randomMealNetworkCallBack.onRandomMealCallFail(response.message());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Meal> call, Throwable throwable) {
-                randomMealNetworkCallBack.onRandomMealCallFail(throwable.getMessage());
-            }
-        });
+    public Single<Meal> getRandomMeal() {
+        return apiService.getRandomMeal();
     }
 
-    public void getMealById(GetMealByIdNetworkCallBack getMealByIdNetworkCallBack, String id) {
-        Call<Meal> mealCall = apiService.getMealById(id);
-
-        mealCall.enqueue(new Callback<Meal>() {
-            @Override
-            public void onResponse(Call<Meal> call, Response<Meal> response) {
-                if (response.isSuccessful()) {
-                    getMealByIdNetworkCallBack.onGetMealByIdCallSuccess(response.body().getMeals().get(0));
-                } else {
-                    getMealByIdNetworkCallBack.onGetMealByIdCallFail(response.message());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Meal> call, Throwable throwable) {
-                getMealByIdNetworkCallBack.onGetMealByIdCallFail(throwable.getMessage());
-            }
-        });
+    public Single<Meal> getMealById(String id) {
+        return apiService.getMealById(id);
     }
 
-    public void getAllMeals(GetAllMealNetworkCallBack getAllMealNetworkCallBack) {
-        Call<MealsList> callMeals = apiService.getAllMealsByIngredientName("");
-        callMeals.enqueue(new Callback<MealsList>() {
-            @Override
-            public void onResponse(Call<MealsList> call, Response<MealsList> response) {
-                if (response.isSuccessful()) {
-                    getAllMealNetworkCallBack.onGetAllMealCallSuccess(response.body());
-                } else {
-                    getAllMealNetworkCallBack.onGetAllMealCallFail(response.message());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<MealsList> call, Throwable throwable) {
-                getAllMealNetworkCallBack.onGetAllMealCallFail(throwable.getMessage());
-            }
-        });
+    public Single<MealsList> getAllMeals() {
+        return apiService.getAllMealsByIngredientName("");
     }
 }

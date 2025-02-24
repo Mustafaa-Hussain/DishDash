@@ -2,11 +2,13 @@ package com.mustafa.dishdash.main.data_layer.db;
 
 import android.content.Context;
 
-import androidx.lifecycle.LiveData;
-
-import com.mustafa.dishdash.main.data_layer.db.entities.FavoriteMeal;
+import com.mustafa.dishdash.main.data_layer.pojo.random_meal.MealsItem;
 
 import java.util.List;
+
+import io.reactivex.rxjava3.core.Completable;
+import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.core.Single;
 
 public class FavoritesMealsLocalDatasource {
     private FavoritesMealsDAO dao;
@@ -15,23 +17,23 @@ public class FavoritesMealsLocalDatasource {
         dao = FavoritesMealsDB.getInstance(context).getFavoritesMealsDAO();
     }
 
-    public LiveData<List<FavoriteMeal>> getFavoritesMeals(String userEmail) {
-        return dao.getFavoritesMeals(userEmail);
+    public Flowable<List<MealsItem>> getFavoritesMeals() {
+        return dao.getFavoritesMeals();
     }
 
-    public void insetFavoriteMeal(FavoriteMeal favoritesMeal) {
-        new Thread(() -> {
-            dao.insetFavoriteMeal(favoritesMeal);
-        }).start();
+    public Single<MealsItem> getFavoriteMealById(String mealId) {
+        return dao.getFavoriteMealById(mealId);
     }
 
-    public void deleteFavoriteMeal(FavoriteMeal favoritesMeal) {
-        new Thread(() -> {
-            dao.deleteFavoriteMeal(favoritesMeal);
-        }).start();
+    public Single<Integer> isFavoriteMeal(String id) {
+        return dao.isFavoriteMeal(id);
     }
 
-    public LiveData<FavoriteMeal> getFavoriteMealById(String userEmail, String mealId) {
-        return dao.getFavoriteMealById(userEmail, mealId);
+    public Completable insetFavoriteMeal(MealsItem meal) {
+        return dao.insetFavoriteMeal(meal);
+    }
+
+    public Completable deleteFavoriteMeal(MealsItem meal) {
+        return dao.deleteFavoriteMeal(meal);
     }
 }

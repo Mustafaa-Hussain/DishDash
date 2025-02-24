@@ -1,16 +1,13 @@
 package com.mustafa.dishdash.main.home.presenter;
 
+import android.annotation.SuppressLint;
+
 import com.mustafa.dishdash.main.data_layer.MealsRepository;
-import com.mustafa.dishdash.main.data_layer.network.GetAllMealNetworkCallBack;
-import com.mustafa.dishdash.main.data_layer.network.GetMealByIdNetworkCallBack;
-import com.mustafa.dishdash.main.data_layer.network.GetRandomMealNetworkCallBack;
-import com.mustafa.dishdash.main.data_layer.pojo.meals_short_details.MealsList;
-import com.mustafa.dishdash.main.data_layer.pojo.random_meal.MealsItem;
 import com.mustafa.dishdash.main.home.view.HomeView;
 
 import java.util.Calendar;
 
-public class HomePresenter implements GetAllMealNetworkCallBack, GetMealByIdNetworkCallBack, GetRandomMealNetworkCallBack {
+public class HomePresenter {
 
     private HomeView view;
     private MealsRepository repository;
@@ -20,49 +17,32 @@ public class HomePresenter implements GetAllMealNetworkCallBack, GetMealByIdNetw
         this.repository = repository;
     }
 
+    @SuppressLint("CheckResult")
     public void getRandomMeal() {
-        int id = repository.getSavedMealId();
+        String id = repository.getSavedMealId();
         int day = repository.getDateOfSavedMeal();
 
-        if (id == -1 || day != Calendar.getInstance().get(Calendar.DATE)) {
-            repository.getRandomMeal(this);
+        if (id.isEmpty() || day != Calendar.getInstance().get(Calendar.DATE)) {
+            repository
+                    .getRandomMeal()
+                    .subscribe(mealsList -> {
+                                view.randomMealResultSuccess(mealsList.getMeals().get(0));
+                                repository.saveTodayMealId(mealsList.getMeals().get(0).getIdMeal());
+                            },
+                            error -> view.randomMealResultFail(error.getMessage()));
         } else {
-            repository.getMealById(this, id + "");
+            repository
+                    .getMealById(id)
+                    .subscribe(mealsItemBooleanPair -> view.mealByIdResultSuccess(mealsItemBooleanPair.first),
+                            error -> view.mealByIdResultFail(error.getMessage()));
         }
     }
 
+    @SuppressLint("CheckResult")
     public void getAllMeals() {
-        repository.getAllMeals(this);
-    }
-
-    @Override
-    public void onGetAllMealCallSuccess(MealsList mealsList) {
-        view.allMealsResultSuccess(mealsList);
-    }
-
-    @Override
-    public void onGetAllMealCallFail(String errorMessage) {
-        view.allMealsResultFail(errorMessage);
-    }
-
-    @Override
-    public void onGetMealByIdCallSuccess(MealsItem meal) {
-        view.mealByIdResultSuccess(meal);
-    }
-
-    @Override
-    public void onGetMealByIdCallFail(String errorMessage) {
-        view.mealByIdResultFail(errorMessage);
-    }
-
-    @Override
-    public void onRandomMealCallSuccess(MealsItem meal) {
-        view.randomMealResultSuccess(meal);
-        repository.saveTodayMealId(Integer.parseInt(meal.getIdMeal()));
-    }
-
-    @Override
-    public void onRandomMealCallFail(String errorMessage) {
-        view.randomMealResultFail(errorMessage);
+        repository
+                .getAllMeals()
+                .subscribe(mealsList -> view.allMealsResultSuccess(mealsList),
+                        error -> view.allMealsResultFail(error.getMessage()));
     }
 }

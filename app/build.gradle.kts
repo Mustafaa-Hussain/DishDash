@@ -39,6 +39,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
+    implementation(libs.firebase.firestore)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
@@ -52,20 +53,38 @@ dependencies {
     implementation(libs.converter.gson)
     implementation(libs.gson)
 
+
     implementation(libs.swiperefreshlayout)
 
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
 
+    //youtube player
     implementation(libs.core)
+
 
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
     implementation(libs.com.google.firebase.firebase.auth)
     implementation(libs.play.services.auth)
+    implementation(libs.google.services)
+    implementation(libs.google.firebase.firestore)
+
 
     implementation(libs.room.runtime)
     annotationProcessor(libs.room.compiler)
 
-    implementation (libs.carouselrecyclerview)
+    
+    implementation(libs.carouselrecyclerview)
+
+    //rxjava
+    implementation("io.reactivex.rxjava3:rxandroid:3.0.2")
+    implementation("io.reactivex.rxjava3:rxjava:3.1.5")
+
+
+    //retrofit rxjava
+    implementation ("com.github.akarnokd:rxjava3-retrofit-adapter:3.0.0")
+
+    //room rxjava
+    implementation ("androidx.room:room-rxjava3:2.6.1")
 }

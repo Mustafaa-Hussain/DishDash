@@ -13,8 +13,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Observer;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,7 +25,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.snackbar.Snackbar;
@@ -35,9 +32,9 @@ import com.mustafa.dishdash.R;
 import com.mustafa.dishdash.auth.AuthenticationActivity;
 import com.mustafa.dishdash.auth.data_layer.AuthRepository;
 import com.mustafa.dishdash.auth.data_layer.firebase.UserRemoteDatasource;
+import com.mustafa.dishdash.main.data_layer.FavoriteMealsRepository;
 import com.mustafa.dishdash.main.data_layer.MealsRepository;
 import com.mustafa.dishdash.main.data_layer.db.FavoritesMealsLocalDatasource;
-import com.mustafa.dishdash.main.data_layer.db.entities.FavoriteMeal;
 import com.mustafa.dishdash.main.data_layer.network.MealsRemoteDatasource;
 import com.mustafa.dishdash.main.data_layer.pojo.random_meal.MealsItem;
 import com.mustafa.dishdash.main.data_layer.shared_prefs.TodayMealLocalDatasource;
@@ -50,7 +47,7 @@ public class RecipeDetailsFragment extends Fragment implements RecipeDetailsView
 
     private TextView txtMealName, instructions;
     private ChipGroup mealCategories;
-    private ImageView addToCalender, togleFavorite, mealImage;
+    private ImageView addToCalender, toggleFavorite, mealImage;
 
     private LinearLayout linearLayout;
     private YouTubePlayerView youTubePlayerView;
@@ -59,12 +56,9 @@ public class RecipeDetailsFragment extends Fragment implements RecipeDetailsView
     private CardView mealCard;
     private TextView dismiss, login;
     private Animation openBanner, closeBanner, moveUp;
-    private @NonNull String mealId;
-    private boolean displayed = false;
     private boolean isFavorite = false;
 
     public RecipeDetailsFragment() {
-        // Required empty public constructor
     }
 
     @Override
@@ -86,18 +80,17 @@ public class RecipeDetailsFragment extends Fragment implements RecipeDetailsView
 
         getLifecycle().addObserver(youTubePlayerView);
 
-        mealId = RecipeDetailsFragmentArgs.fromBundle(getArguments()).getId();
+        String mealId = RecipeDetailsFragmentArgs.fromBundle(getArguments()).getId();
 
         presenter = new RecipeDetailsPresenter(this,
                 MealsRepository.getInstance(new MealsRemoteDatasource(),
                         new TodayMealLocalDatasource(getContext()),
                         new FavoritesMealsLocalDatasource(getContext())),
+                FavoriteMealsRepository.getInstance(new FavoritesMealsLocalDatasource(getContext())),
                 AuthRepository.getInstance(new UserRemoteDatasource(getActivity())));
 
 
         presenter.getMealById(mealId);
-
-        presenter.getFavoriteMealById(mealId);
     }
 
     private void setupUI(View view) {
@@ -105,7 +98,7 @@ public class RecipeDetailsFragment extends Fragment implements RecipeDetailsView
         instructions = view.findViewById(R.id.meal_instructions);
         mealCategories = view.findViewById(R.id.meal_tags);
         addToCalender = view.findViewById(R.id.add_to_calender);
-        togleFavorite = view.findViewById(R.id.add_to_favorite);
+        toggleFavorite = view.findViewById(R.id.add_to_favorite);
         mealImage = view.findViewById(R.id.instructions_image);
         linearLayout = view.findViewById(R.id.ingredients_container);
         youTubePlayerView = view.findViewById(R.id.youtube_player_view);
@@ -153,55 +146,55 @@ public class RecipeDetailsFragment extends Fragment implements RecipeDetailsView
     }
 
     @Override
-    public void recipeDetailsResponseSuccess(MealsItem mealsItem) {
-        displayMealDetails(mealsItem);
+    public void onGetMealDetailsSuccess(MealsItem mealsItem, Boolean isFavorite) {
+        displayMealDetails(mealsItem, isFavorite);
     }
 
     @Override
-    public void recipeDetailsResponseFail(String errorMessage) {
-        displayed = false;
+    public void onGetMealDetailsFail(String errorMessage) {
         Snackbar.make(this.getView(), getString(R.string.you_are_not_connected), Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
-    public void addedToFavorites() {
-        Toast.makeText(getContext(), getString(R.string.added_to_favorites), LENGTH_SHORT).show();
+    public void onAddedToFavoritesSuccess() {
+        toggleFavorite.setImageResource(R.drawable.remove_from_favorite);
+        isFavorite = true;
     }
+
+    @Override
+    public void onAddedToFavoritesFail() {
+        Toast.makeText(getContext(), getString(R.string.adding_to_favorite_error), LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onRemoveFavoriteSuccess() {
+        toggleFavorite.setImageResource(R.drawable.add_to_favorite);
+        isFavorite = false;
+    }
+
+    @Override
+    public void onRemoveFavoriteFail(String errorMsg) {
+        Toast.makeText(getContext(), getString(R.string.failed_to_remove_favorite_meal), LENGTH_SHORT).show();
+    }
+
 
     @Override
     public void userNotLoggedIn() {
         //banner
         notLoggedInBanner.setAnimation(openBanner);
         notLoggedInBanner.setVisibility(VISIBLE);
-    }
-
-    @Override
-    public void favoriteMeal(LiveData<FavoriteMeal> favoriteMealById) {
-        if (getActivity() != null) {
-            favoriteMealById.observe(getActivity(), new Observer<FavoriteMeal>() {
-                @Override
-                public void onChanged(FavoriteMeal favoriteMeal) {
-                    if (favoriteMeal != null) {
-                        togleFavorite.setImageResource(R.drawable.remove_from_favorite);
-                        isFavorite = true;
-                        if (!displayed) {
-                            displayMealDetails(favoriteMeal);
-                        }
-                    } else {
-                        togleFavorite.setImageResource(R.drawable.add_to_favorite);
-                        isFavorite = false;
-                    }
-                }
-            });
-        }
+        Toast.makeText(getContext(), getString(R.string.you_are_not_logged_in), LENGTH_SHORT).show();
     }
 
 
-    private void displayMealDetails(MealsItem mealItem) {
+    private void displayMealDetails(MealsItem mealItem, Boolean isFavorite) {
         if (getContext() != null) {
-            displayed = true;
+            this.isFavorite = isFavorite;
+
             txtMealName.setText(mealItem.getStrMeal());
             instructions.setText(mealItem.getStrInstructions());
+
+            toggleFavorite.setImageResource(isFavorite ? R.drawable.remove_from_favorite : R.drawable.add_to_favorite);
 
             mealCategories.removeAllViews();
             addChipToGroup(mealItem.getStrCategory());
@@ -212,14 +205,14 @@ public class RecipeDetailsFragment extends Fragment implements RecipeDetailsView
             addToCalender.setOnClickListener(view -> {
                 Toast.makeText(getContext(), "add to calender", LENGTH_SHORT).show();
             });
-            togleFavorite.setOnClickListener(view -> {
-                if (!isFavorite) {
-                    addMealToFavorites(mealItem);
+            toggleFavorite.setOnClickListener(view -> {
+                if (!this.isFavorite) {
+                    presenter.addMealToFavorites(mealItem);
                 } else {
                     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                     builder.setMessage(R.string.are_sure_you_want_to_remove_this_meal_from_favorites)
                             .setPositiveButton(R.string.remove, (dialogInterface, i) -> {
-                                removeFavoriteMeal(mealItem);
+                                presenter.removeFavoriteMeal(mealItem);
                             })
                             .setNegativeButton(R.string.cancel, (dialogInterface, i) -> {
                                 dialogInterface.dismiss();
@@ -244,14 +237,6 @@ public class RecipeDetailsFragment extends Fragment implements RecipeDetailsView
                 youTubePlayerView.setVisibility(GONE);
             }
         }
-    }
-
-    private void addMealToFavorites(MealsItem mealItem) {
-        presenter.addMealToFavorites(mealItem);
-    }
-
-    private void removeFavoriteMeal(MealsItem mealsItem) {
-        presenter.removeFavoriteMeal(mealsItem);
     }
 
     private void addIngredient(String ingredientTitle, String ingredientMeasurement) {

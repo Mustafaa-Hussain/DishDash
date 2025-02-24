@@ -14,9 +14,9 @@ public class TodayMealLocalDatasource {
         this.context = context;
     }
 
-    public int getSavedMealId() {
+    public String getSavedMealId() {
         SharedPreferences sharedPrefs = context.getSharedPreferences(Constants.DAY_RANDOM_MEAL, Context.MODE_PRIVATE);
-        return sharedPrefs.getInt(Constants.MEAL_ID, -1);
+        return sharedPrefs.getString(Constants.MEAL_ID, "");
     }
 
     public int getDateOfSavedMeal(){
@@ -24,10 +24,10 @@ public class TodayMealLocalDatasource {
         return sharedPrefs.getInt(Constants.DAY, -1);
     }
 
-    public void saveTodayMealId(int id) {
+    public void saveTodayMealId(String id) {
         SharedPreferences sharedPrefs = context.getSharedPreferences(Constants.DAY_RANDOM_MEAL, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPrefs.edit();
-        editor.putInt(Constants.MEAL_ID, id);
+        editor.putString(Constants.MEAL_ID, id);
         editor.putInt(Constants.DAY, Calendar.getInstance().get(Calendar.DATE));
         editor.apply();
     }
