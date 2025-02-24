@@ -15,7 +15,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.mustafa.dishdash.R;
 import com.mustafa.dishdash.auth.AuthenticationActivity;
 import com.mustafa.dishdash.auth.data_layer.AuthRepository;
@@ -23,11 +22,10 @@ import com.mustafa.dishdash.auth.data_layer.firebase.UserRemoteDatasource;
 import com.mustafa.dishdash.main.data_layer.FavoriteMealsRepository;
 import com.mustafa.dishdash.main.data_layer.MealsRepository;
 import com.mustafa.dishdash.main.data_layer.db.FavoritesMealsLocalDatasource;
-import com.mustafa.dishdash.main.profile.data_layer.FavoritesRepository;
-import com.mustafa.dishdash.main.profile.data_layer.firebase.favorite_meals.FavoritesRemoteDatasource;
+import com.mustafa.dishdash.main.data_layer.firebase.favorite_meals.FavoritesRemoteDatasource;
+import com.mustafa.dishdash.main.data_layer.network.MealsRemoteDatasource;
+import com.mustafa.dishdash.main.data_layer.shared_prefs.TodayMealLocalDatasource;
 import com.mustafa.dishdash.main.profile.presenter.ProfilePresenter;
-
-import java.util.Map;
 
 public class ProfileFragment extends Fragment implements ProfileView {
 
@@ -61,9 +59,11 @@ public class ProfileFragment extends Fragment implements ProfileView {
         });
         setupUI(view);
 
-        presenter = new ProfilePresenter(FavoritesRepository.getInstance(new FavoritesRemoteDatasource())
-                , FavoriteMealsRepository.getInstance(new FavoritesMealsLocalDatasource(getContext()))
-                , AuthRepository.getInstance(new UserRemoteDatasource(getActivity()))
+        presenter = new ProfilePresenter(MealsRepository.getInstance(new MealsRemoteDatasource()
+                , new TodayMealLocalDatasource(getContext())
+                , new FavoritesMealsLocalDatasource(getContext()))
+                , FavoriteMealsRepository.getInstance(new FavoritesMealsLocalDatasource(getContext())
+                , new FavoritesRemoteDatasource())
                 , this);
 
 
@@ -72,7 +72,10 @@ public class ProfileFragment extends Fragment implements ProfileView {
         });
 
 
-        btnSignOut.setOnClickListener(v -> FirebaseAuth.getInstance().signOut());
+        btnSignOut.setOnClickListener(v -> {
+            presenter.clearFavorites();
+            FirebaseAuth.getInstance().signOut();
+        });
     }
 
     private void setupUI(View view) {
@@ -83,11 +86,13 @@ public class ProfileFragment extends Fragment implements ProfileView {
 
     @Override
     public void syncDataSuccessfully() {
-        Toast.makeText(getContext(), "Data sync successfully!", Toast.LENGTH_SHORT).show();
+        if (getContext() != null)
+            Toast.makeText(getContext(), "Data sync successfully!", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void syncDataFailed(String errorMsg) {
-        Toast.makeText(getContext(), "Failed to sync data!", Toast.LENGTH_SHORT).show();
+        if (getContext() != null)
+            Toast.makeText(getContext(), "Failed to sync data!", Toast.LENGTH_SHORT).show();
     }
 }

@@ -35,6 +35,7 @@ import com.mustafa.dishdash.auth.data_layer.firebase.UserRemoteDatasource;
 import com.mustafa.dishdash.main.data_layer.FavoriteMealsRepository;
 import com.mustafa.dishdash.main.data_layer.MealsRepository;
 import com.mustafa.dishdash.main.data_layer.db.FavoritesMealsLocalDatasource;
+import com.mustafa.dishdash.main.data_layer.firebase.favorite_meals.FavoritesRemoteDatasource;
 import com.mustafa.dishdash.main.data_layer.network.MealsRemoteDatasource;
 import com.mustafa.dishdash.main.data_layer.pojo.random_meal.MealsItem;
 import com.mustafa.dishdash.main.data_layer.shared_prefs.TodayMealLocalDatasource;
@@ -86,7 +87,8 @@ public class RecipeDetailsFragment extends Fragment implements RecipeDetailsView
                 MealsRepository.getInstance(new MealsRemoteDatasource(),
                         new TodayMealLocalDatasource(getContext()),
                         new FavoritesMealsLocalDatasource(getContext())),
-                FavoriteMealsRepository.getInstance(new FavoritesMealsLocalDatasource(getContext())),
+                FavoriteMealsRepository.getInstance(new FavoritesMealsLocalDatasource(getContext())
+                , new FavoritesRemoteDatasource()),
                 AuthRepository.getInstance(new UserRemoteDatasource(getActivity())));
 
 

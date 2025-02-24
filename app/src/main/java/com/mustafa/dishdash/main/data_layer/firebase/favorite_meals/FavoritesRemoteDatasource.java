@@ -1,4 +1,4 @@
-package com.mustafa.dishdash.main.profile.data_layer.firebase.favorite_meals;
+package com.mustafa.dishdash.main.data_layer.firebase.favorite_meals;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
@@ -31,9 +31,8 @@ public class FavoritesRemoteDatasource {
             documentReference.get()
                     .addOnSuccessListener(
                             documentSnapshot -> {
-//                                Log.i("TAG", documentSnapshot.toObject(FavoriteList.class).getFavoriteMeals().toString());
-//                                callBack.getAllFavoriteMealsRemoteOnSuccess(
-//                                        documentSnapshot.toObject(FavoriteList.class).getFavoriteMeals());
+                                callBack.getAllFavoriteMealsRemoteOnSuccess(
+                                        (List<String>) documentSnapshot.get(FAV_MEALS));
                             })
                     .addOnFailureListener(e -> callBack.
                             getAllFavoriteMealsRemoteOnFail(e.getMessage()));

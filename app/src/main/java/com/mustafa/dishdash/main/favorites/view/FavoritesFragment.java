@@ -18,6 +18,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.mustafa.dishdash.R;
 import com.mustafa.dishdash.main.data_layer.FavoriteMealsRepository;
 import com.mustafa.dishdash.main.data_layer.db.FavoritesMealsLocalDatasource;
+import com.mustafa.dishdash.main.data_layer.firebase.favorite_meals.FavoritesRemoteDatasource;
 import com.mustafa.dishdash.main.data_layer.pojo.random_meal.MealsItem;
 import com.mustafa.dishdash.main.favorites.presenter.FavoritesPresenter;
 
@@ -49,7 +50,8 @@ public class FavoritesFragment extends Fragment implements FavoriteItemClickList
         super.onViewCreated(view, savedInstanceState);
 
         presenter = new FavoritesPresenter(this,
-                FavoriteMealsRepository.getInstance(new FavoritesMealsLocalDatasource(getContext())));
+                FavoriteMealsRepository.getInstance(new FavoritesMealsLocalDatasource(getContext())
+                        , new FavoritesRemoteDatasource()));
 
         favoritesRecyclerView = view.findViewById(R.id.favorite_meals_recycler_view);
         adapter = new FavoritesAdapter(getContext(), this);
@@ -65,24 +67,27 @@ public class FavoritesFragment extends Fragment implements FavoriteItemClickList
 
     @Override
     public void noFavoriteMeals() {
-        Toast.makeText(getContext(), R.string.there_are_no_favorite_meals, Toast.LENGTH_SHORT).show();
+        if (getContext() != null)
+            Toast.makeText(getContext(), R.string.there_are_no_favorite_meals, Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onRemovedSuccess() {
-        Toast.makeText(getContext(), R.string.favorite_meal_removed, Toast.LENGTH_SHORT).show();
+        if (getContext() != null)
+            Toast.makeText(getContext(), R.string.favorite_meal_removed, Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onRemovedFail() {
-        Toast.makeText(getContext(), R.string.failed_to_remove_favorite_meal, Toast.LENGTH_SHORT).show();
+        if (getContext() != null)
+            Toast.makeText(getContext(), R.string.failed_to_remove_favorite_meal, Toast.LENGTH_SHORT).show();
     }
 
 
     @Override
     public void userNotLoggedIn() {
-        if (getView() != null)
-            Snackbar.make(getView(), R.string.you_are_not_logged_in, Snackbar.LENGTH_SHORT).show();
+        if (getContext() != null)
+            Toast.makeText(getContext(), R.string.you_are_not_logged_in, Toast.LENGTH_SHORT).show();
     }
 
     @Override

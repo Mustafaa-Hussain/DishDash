@@ -6,6 +6,8 @@ import com.mustafa.dishdash.main.data_layer.FavoriteMealsRepository;
 import com.mustafa.dishdash.main.data_layer.pojo.random_meal.MealsItem;
 import com.mustafa.dishdash.main.favorites.view.FavoritesView;
 
+import io.reactivex.rxjava3.core.Observer;
+
 public class FavoritesPresenter {
     private FavoritesView view;
     private FavoriteMealsRepository favoriteMealsRepository;

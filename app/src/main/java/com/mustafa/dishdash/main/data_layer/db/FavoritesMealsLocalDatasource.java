@@ -36,4 +36,8 @@ public class FavoritesMealsLocalDatasource {
     public Completable deleteFavoriteMeal(MealsItem meal) {
         return dao.deleteFavoriteMeal(meal);
     }
+
+    public Completable clearFavorites(){
+        return dao.clearFavorites();
+    }
 }
