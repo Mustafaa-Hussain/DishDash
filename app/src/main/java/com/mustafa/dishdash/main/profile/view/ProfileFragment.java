@@ -17,24 +17,18 @@ import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
 import com.mustafa.dishdash.R;
 import com.mustafa.dishdash.auth.AuthenticationActivity;
-import com.mustafa.dishdash.auth.data_layer.AuthRepository;
-import com.mustafa.dishdash.auth.data_layer.firebase.UserRemoteDatasource;
 import com.mustafa.dishdash.main.data_layer.FavoriteMealsRepository;
-import com.mustafa.dishdash.main.data_layer.MealsRepository;
 import com.mustafa.dishdash.main.data_layer.db.FavoritesMealsLocalDatasource;
 import com.mustafa.dishdash.main.data_layer.firebase.favorite_meals.FavoritesRemoteDatasource;
-import com.mustafa.dishdash.main.data_layer.network.MealsRemoteDatasource;
-import com.mustafa.dishdash.main.data_layer.shared_prefs.TodayMealLocalDatasource;
 import com.mustafa.dishdash.main.profile.presenter.ProfilePresenter;
 
 public class ProfileFragment extends Fragment implements ProfileView {
 
-    private Button btnSignOut, btnSyncData;
+    private Button btnSignOut;
 
     private ProfilePresenter presenter;
 
     public ProfileFragment() {
-        // Required empty public constructor
     }
 
 
@@ -59,17 +53,9 @@ public class ProfileFragment extends Fragment implements ProfileView {
         });
         setupUI(view);
 
-        presenter = new ProfilePresenter(MealsRepository.getInstance(new MealsRemoteDatasource()
-                , new TodayMealLocalDatasource(getContext())
-                , new FavoritesMealsLocalDatasource(getContext()))
-                , FavoriteMealsRepository.getInstance(new FavoritesMealsLocalDatasource(getContext())
+        presenter = new ProfilePresenter(FavoriteMealsRepository.getInstance(new FavoritesMealsLocalDatasource(getContext())
                 , new FavoritesRemoteDatasource())
                 , this);
-
-
-        btnSyncData.setOnClickListener(v -> {
-            presenter.syncUserData();
-        });
 
 
         btnSignOut.setOnClickListener(v -> {
@@ -78,21 +64,14 @@ public class ProfileFragment extends Fragment implements ProfileView {
         });
     }
 
+    @Override
+    public void onStop() {
+        presenter.close();
+        super.onStop();
+    }
+
     private void setupUI(View view) {
         btnSignOut = view.findViewById(R.id.sign_out);
-        btnSyncData = view.findViewById(R.id.btn_sync_firebase);
 
-    }
-
-    @Override
-    public void syncDataSuccessfully() {
-        if (getContext() != null)
-            Toast.makeText(getContext(), "Data sync successfully!", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void syncDataFailed(String errorMsg) {
-        if (getContext() != null)
-            Toast.makeText(getContext(), "Failed to sync data!", Toast.LENGTH_SHORT).show();
     }
 }

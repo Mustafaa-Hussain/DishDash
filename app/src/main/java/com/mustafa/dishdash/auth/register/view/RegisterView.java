@@ -21,4 +21,8 @@ public interface RegisterView {
 
     void showProgressbar();
     void hideProgressbar();
+
+    void onDataSyncedFail();
+
+    void onDataSyncedSuccess();
 }

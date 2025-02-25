@@ -27,6 +27,12 @@ import com.mustafa.dishdash.R;
 import com.mustafa.dishdash.auth.data_layer.AuthRepository;
 import com.mustafa.dishdash.auth.data_layer.firebase.UserRemoteDatasource;
 import com.mustafa.dishdash.auth.login.presenter.LoginPresenter;
+import com.mustafa.dishdash.main.data_layer.FavoriteMealsRepository;
+import com.mustafa.dishdash.main.data_layer.MealsRepository;
+import com.mustafa.dishdash.main.data_layer.db.FavoritesMealsLocalDatasource;
+import com.mustafa.dishdash.main.data_layer.firebase.favorite_meals.FavoritesRemoteDatasource;
+import com.mustafa.dishdash.main.data_layer.network.MealsRemoteDatasource;
+import com.mustafa.dishdash.main.data_layer.shared_prefs.TodayMealLocalDatasource;
 
 public class LoginFragment extends Fragment implements LoginView {
 
@@ -60,7 +66,10 @@ public class LoginFragment extends Fragment implements LoginView {
         super.onViewCreated(view, savedInstanceState);
         setupUI(view);
 
-        presenter = new LoginPresenter(AuthRepository.getInstance(new UserRemoteDatasource(getActivity())), this);
+        presenter = new LoginPresenter(AuthRepository.getInstance(new UserRemoteDatasource(getActivity())),
+                FavoriteMealsRepository.getInstance(new FavoritesMealsLocalDatasource(getContext()), new FavoritesRemoteDatasource()),
+                MealsRepository.getInstance(new MealsRemoteDatasource(), new TodayMealLocalDatasource(getContext()), new FavoritesMealsLocalDatasource(getContext())),
+                this);
 
         gotoRegistration.setOnClickListener(v -> {
             Navigation.findNavController(v).navigate(LoginFragmentDirections.actionLoginFragmentToRegisterFragment());
@@ -68,7 +77,6 @@ public class LoginFragment extends Fragment implements LoginView {
 
         btnLogin.setOnClickListener(v -> {
             presenter.authenticateUser(txtEmail.getText().toString(), txtPassword.getText().toString());
-            //block ui and show progress bar until auth finish
         });
 
 
@@ -82,7 +90,6 @@ public class LoginFragment extends Fragment implements LoginView {
         loginByGoogle.setOnClickListener(v -> {
             Intent signInIntent = mGoogleSignInClient.getSignInIntent();
             startActivityForResult(signInIntent, REQ_ONE_TAP);
-            //block ui and show progress bar until auth finish
         });
 
     }
@@ -113,8 +120,15 @@ public class LoginFragment extends Fragment implements LoginView {
     }
 
     @Override
+    public void onStop() {
+        presenter.close();
+        super.onStop();
+    }
+
+    @Override
     public void onAuthenticationSuccess(String username) {
         Toast.makeText(getContext(), "Login successfully", Toast.LENGTH_SHORT).show();
+        presenter.syncUserData();
         getActivity().finish();
     }
 
@@ -153,5 +167,19 @@ public class LoginFragment extends Fragment implements LoginView {
     @Override
     public void hideProgressbar() {
         overlayLayout.setVisibility(GONE);
+    }
+
+    @Override
+    public void onDataSyncedSuccess() {
+        if (getContext() != null) {
+            Toast.makeText(getContext(), R.string.data_synced, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onDataSyncedFail() {
+        if (getContext() != null) {
+            Toast.makeText(getContext(), R.string.failed_to_sync_data, Toast.LENGTH_SHORT).show();
+        }
     }
 }

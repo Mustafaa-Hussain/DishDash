@@ -49,4 +49,6 @@
     <string name="adding_to_favorite_error">Adding to Favorite Error!</string>
     <string name="failed_to_remove_favorite_meal">Failed to remove Favorite Meal!</string>
     <string name="there_are_no_favorite_meals">There are no Favorite Meals!</string>
+    <string name="data_synced">Data synced!</string>
+    <string name="failed_to_sync_data">Failed To Sync Data</string>
 </resources>

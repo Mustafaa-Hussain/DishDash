@@ -40,6 +40,7 @@ import com.mustafa.dishdash.main.data_layer.network.MealsRemoteDatasource;
 import com.mustafa.dishdash.main.data_layer.pojo.random_meal.MealsItem;
 import com.mustafa.dishdash.main.data_layer.shared_prefs.TodayMealLocalDatasource;
 import com.mustafa.dishdash.main.recipe_details.presenter.RecipeDetailsPresenter;
+import com.mustafa.dishdash.utils.Constants;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView;
@@ -88,7 +89,7 @@ public class RecipeDetailsFragment extends Fragment implements RecipeDetailsView
                         new TodayMealLocalDatasource(getContext()),
                         new FavoritesMealsLocalDatasource(getContext())),
                 FavoriteMealsRepository.getInstance(new FavoritesMealsLocalDatasource(getContext())
-                , new FavoritesRemoteDatasource()),
+                        , new FavoritesRemoteDatasource()),
                 AuthRepository.getInstance(new UserRemoteDatasource(getActivity())));
 
 
@@ -143,8 +144,9 @@ public class RecipeDetailsFragment extends Fragment implements RecipeDetailsView
 
     @Override
     public void onStop() {
-        super.onStop();
+        presenter.close();
         getActivity().findViewById(R.id.bottomNavigationView).setVisibility(VISIBLE);
+        super.onStop();
     }
 
     @Override
@@ -179,6 +181,20 @@ public class RecipeDetailsFragment extends Fragment implements RecipeDetailsView
         Toast.makeText(getContext(), getString(R.string.failed_to_remove_favorite_meal), LENGTH_SHORT).show();
     }
 
+    @Override
+    public void onSyncSuccess() {
+        if (getContext() != null) {
+            Toast.makeText(getContext(), R.string.data_synced, LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onSyncDataFailed() {
+        if (getContext() != null) {
+            Toast.makeText(getContext(), R.string.failed_to_sync_data, LENGTH_SHORT).show();
+        }
+    }
+
 
     @Override
     public void userNotLoggedIn() {
@@ -190,59 +206,58 @@ public class RecipeDetailsFragment extends Fragment implements RecipeDetailsView
 
 
     private void displayMealDetails(MealsItem mealItem, Boolean isFavorite) {
-        if (getContext() != null) {
-            this.isFavorite = isFavorite;
+        this.isFavorite = isFavorite;
 
-            txtMealName.setText(mealItem.getStrMeal());
-            instructions.setText(mealItem.getStrInstructions());
+        txtMealName.setText(mealItem.getStrMeal());
+        instructions.setText(mealItem.getStrInstructions());
 
-            toggleFavorite.setImageResource(isFavorite ? R.drawable.remove_from_favorite : R.drawable.add_to_favorite);
+        toggleFavorite.setImageResource(isFavorite ? R.drawable.remove_from_favorite : R.drawable.add_to_favorite);
 
-            mealCategories.removeAllViews();
-            addChipToGroup(mealItem.getStrCategory());
-            addChipToGroup(mealItem.getStrArea());
+        mealCategories.removeAllViews();
+        addChipToGroup(mealItem.getStrCategory());
+        addChipToGroup(mealItem.getStrArea());
 
-            loadAndPlaceImage(mealItem.getStrMealThumb(), mealImage);
+        loadAndPlaceImage(mealItem.getStrMealThumb(), mealImage);
 
-            addToCalender.setOnClickListener(view -> {
-                Toast.makeText(getContext(), "add to calender", LENGTH_SHORT).show();
-            });
-            toggleFavorite.setOnClickListener(view -> {
-                if (!this.isFavorite) {
-                    presenter.addMealToFavorites(mealItem);
-                } else {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                    builder.setMessage(R.string.are_sure_you_want_to_remove_this_meal_from_favorites)
-                            .setPositiveButton(R.string.remove, (dialogInterface, i) -> {
-                                presenter.removeFavoriteMeal(mealItem);
-                            })
-                            .setNegativeButton(R.string.cancel, (dialogInterface, i) -> {
-                                dialogInterface.dismiss();
-                            });
-                    builder.create().show();
+        addToCalender.setOnClickListener(view -> {
+            Toast.makeText(getContext(), "add to calender", LENGTH_SHORT).show();
+        });
+        toggleFavorite.setOnClickListener(view -> {
+            if (!this.isFavorite) {
+                presenter.addMealToFavorites(mealItem);
+            } else {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setMessage(R.string.are_sure_you_want_to_remove_this_meal_from_favorites)
+                        .setPositiveButton(R.string.remove, (dialogInterface, i) -> {
+                            presenter.removeFavoriteMeal(mealItem);
+                        })
+                        .setNegativeButton(R.string.cancel, (dialogInterface, i) -> {
+                            dialogInterface.dismiss();
+                        });
+                builder.create().show();
+            }
+        });
+
+        mealItem.getingredients().forEach((item) -> {
+            addIngredient(item.first, item.second);
+        });
+
+
+        if (!mealItem.getStrYoutube().isEmpty()) {
+            youTubePlayerView.addYouTubePlayerListener(new AbstractYouTubePlayerListener() {
+                @Override
+                public void onReady(@NonNull YouTubePlayer youTubePlayer) {
+                    youTubePlayer.cueVideo(presenter.getYoutubeVideo(mealItem.getStrYoutube()), 0);
                 }
             });
-
-            mealItem.getingredients().forEach((item) -> {
-                addIngredient(item.first, item.second);
-            });
-
-
-            if (!mealItem.getStrYoutube().isEmpty()) {
-                youTubePlayerView.addYouTubePlayerListener(new AbstractYouTubePlayerListener() {
-                    @Override
-                    public void onReady(@NonNull YouTubePlayer youTubePlayer) {
-                        youTubePlayer.cueVideo(presenter.getYoutubeVideo(mealItem.getStrYoutube()), 0);
-                    }
-                });
-            } else {
-                youTubePlayerView.setVisibility(GONE);
-            }
+        } else {
+            youTubePlayerView.setVisibility(GONE);
         }
+
     }
 
     private void addIngredient(String ingredientTitle, String ingredientMeasurement) {
-        if (getContext() != null && ingredientTitle != null && !ingredientTitle.trim().isEmpty()) {
+        if (ingredientTitle != null && !ingredientTitle.trim().isEmpty()) {
             View child = getLayoutInflater().inflate(R.layout.ingredients_card, null);
             ImageView ingImage = child.findViewById(R.id.ingredient_image);
             TextView ingTitle = child.findViewById(R.id.ingredient_title);
@@ -251,7 +266,7 @@ public class RecipeDetailsFragment extends Fragment implements RecipeDetailsView
             ingTitle.setText(ingredientTitle);
             ingMeasurement.setText(ingredientMeasurement);
 
-            loadAndPlaceImage(ingredientImageUrl + ingredientTitle + "-Small.png", ingImage);
+            loadAndPlaceImage(ingredientImageUrl + ingredientTitle + Constants.SMALL_IMAGE_EXTENSION, ingImage);
 
             linearLayout.addView(child);
         }

@@ -27,6 +27,12 @@ import com.mustafa.dishdash.R;
 import com.mustafa.dishdash.auth.data_layer.AuthRepository;
 import com.mustafa.dishdash.auth.data_layer.firebase.UserRemoteDatasource;
 import com.mustafa.dishdash.auth.register.presenter.RegisterPresenter;
+import com.mustafa.dishdash.main.data_layer.FavoriteMealsRepository;
+import com.mustafa.dishdash.main.data_layer.MealsRepository;
+import com.mustafa.dishdash.main.data_layer.db.FavoritesMealsLocalDatasource;
+import com.mustafa.dishdash.main.data_layer.firebase.favorite_meals.FavoritesRemoteDatasource;
+import com.mustafa.dishdash.main.data_layer.network.MealsRemoteDatasource;
+import com.mustafa.dishdash.main.data_layer.shared_prefs.TodayMealLocalDatasource;
 
 public class RegisterFragment extends Fragment implements RegisterView {
 
@@ -64,7 +70,10 @@ public class RegisterFragment extends Fragment implements RegisterView {
             Navigation.findNavController(v).navigate(RegisterFragmentDirections.actionRegisterFragmentToLoginFragment());
         });
 
-        presenter = new RegisterPresenter(AuthRepository.getInstance(new UserRemoteDatasource(getActivity())), this);
+        presenter = new RegisterPresenter(AuthRepository.getInstance(new UserRemoteDatasource(getActivity())),
+                FavoriteMealsRepository.getInstance(new FavoritesMealsLocalDatasource(getContext()), new FavoritesRemoteDatasource()),
+                MealsRepository.getInstance(new MealsRemoteDatasource(), new TodayMealLocalDatasource(getContext()), new FavoritesMealsLocalDatasource(getContext())),
+                this);
 
         btnRegister.setOnClickListener(v -> {
             presenter.registerUser(txtUsername.getText().toString(),
@@ -108,6 +117,12 @@ public class RegisterFragment extends Fragment implements RegisterView {
     }
 
     @Override
+    public void onStop() {
+        presenter.close();
+        super.onStop();
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQ_ONE_TAP) {
@@ -118,6 +133,7 @@ public class RegisterFragment extends Fragment implements RegisterView {
     @Override
     public void onRegisterSuccess(String user) {
         Toast.makeText(getContext(), "Register successfully!", Toast.LENGTH_SHORT).show();
+        presenter.syncUserData();
         getActivity().finish();
     }
 
@@ -170,5 +186,19 @@ public class RegisterFragment extends Fragment implements RegisterView {
     @Override
     public void hideProgressbar() {
         overlayLayout.setVisibility(GONE);
+    }
+
+    @Override
+    public void onDataSyncedFail() {
+        if (getContext() != null) {
+            Toast.makeText(getContext(), R.string.failed_to_sync_data, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onDataSyncedSuccess() {
+        if (getContext() != null) {
+            Toast.makeText(getContext(), R.string.data_synced, Toast.LENGTH_SHORT).show();
+        }
     }
 }

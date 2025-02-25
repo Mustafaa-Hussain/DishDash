@@ -91,6 +91,12 @@ public class HomeFragment extends Fragment implements HomeView, MealClickListene
         });
     }
 
+    @Override
+    public void onStop() {
+        presenter.close();
+        super.onStop();
+    }
+
     private void setupUI(View view) {
 
         mealCard = view.findViewById(R.id.random_meal_card);

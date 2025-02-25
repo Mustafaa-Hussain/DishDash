@@ -61,6 +61,12 @@ public class FavoritesFragment extends Fragment implements FavoriteItemClickList
     }
 
     @Override
+    public void onStop() {
+        presenter.close();
+        super.onStop();
+    }
+
+    @Override
     public void allFavoriteMeals(List<MealsItem> mealsList) {
         adapter.setMealsList(mealsList);
     }
@@ -88,6 +94,20 @@ public class FavoritesFragment extends Fragment implements FavoriteItemClickList
     public void userNotLoggedIn() {
         if (getContext() != null)
             Toast.makeText(getContext(), R.string.you_are_not_logged_in, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onSyncDataFailed() {
+        if (getContext() != null) {
+            Toast.makeText(getContext(), R.string.data_synced, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onSyncDataSuccess() {
+        if (getContext() != null) {
+            Toast.makeText(getContext(), R.string.failed_to_sync_data, Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override

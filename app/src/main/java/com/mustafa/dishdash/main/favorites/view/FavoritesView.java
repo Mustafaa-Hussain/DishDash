@@ -12,4 +12,8 @@ public interface FavoritesView {
     void onRemovedSuccess();
     void onRemovedFail();
     void userNotLoggedIn();
+
+    void onSyncDataFailed();
+
+    void onSyncDataSuccess();
 }

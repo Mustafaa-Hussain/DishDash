@@ -19,4 +19,7 @@ public interface LoginView {
     void showProgressbar();
 
     void hideProgressbar();
+
+    void onDataSyncedSuccess();
+    void onDataSyncedFail();
 }

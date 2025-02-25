@@ -17,4 +17,8 @@ public interface RecipeDetailsView {
     void onRemoveFavoriteSuccess();
 
     void onRemoveFavoriteFail(String errorMsg);
+
+    void onSyncSuccess();
+
+    void onSyncDataFailed();
 }

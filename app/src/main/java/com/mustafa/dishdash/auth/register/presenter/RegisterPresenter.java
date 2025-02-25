@@ -13,16 +13,38 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
 import com.mustafa.dishdash.auth.data_layer.AuthRepository;
 import com.mustafa.dishdash.auth.data_layer.firebase.AuthNetworkCallback;
+import com.mustafa.dishdash.auth.login.presenter.LoginPresenter;
 import com.mustafa.dishdash.auth.register.view.RegisterView;
+import com.mustafa.dishdash.main.data_layer.FavoriteMealsRepository;
+import com.mustafa.dishdash.main.data_layer.MealsRepository;
+import com.mustafa.dishdash.main.data_layer.firebase.favorite_meals.GetRemoteFavoriteMealsCallBack;
+import com.mustafa.dishdash.main.data_layer.firebase.favorite_meals.UploadRemoteFavoriteMealsCallBack;
 import com.mustafa.dishdash.utils.EmailValidation;
 
-public class RegisterPresenter implements AuthNetworkCallback {
-    private AuthRepository repository;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.disposables.CompositeDisposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
+
+public class RegisterPresenter implements AuthNetworkCallback, GetRemoteFavoriteMealsCallBack, UploadRemoteFavoriteMealsCallBack {
+    private AuthRepository authRepository;
+    private MealsRepository mealRepository;
+    private FavoriteMealsRepository favoriteMealsRepository;
+    private CompositeDisposable compositeDisposable;
     private RegisterView view;
 
-    public RegisterPresenter(AuthRepository repository, RegisterView view) {
-        this.repository = repository;
+    public RegisterPresenter(
+            AuthRepository authRepository
+            , FavoriteMealsRepository favoriteMealsRepository
+            , MealsRepository mealsRepository, RegisterView view) {
+        this.authRepository = authRepository;
+        this.favoriteMealsRepository = favoriteMealsRepository;
+        this.mealRepository = mealsRepository;
         this.view = view;
+        this.compositeDisposable = new CompositeDisposable();
     }
 
     public void registerUser(String username, String email, String password, String confirmPassword) {
@@ -70,7 +92,7 @@ public class RegisterPresenter implements AuthNetworkCallback {
 
         if (EmailValidation.isValidEmail(email)) {
             view.showProgressbar();
-            repository.registerUser(this, username, email, password);
+            authRepository.registerUser(this, username, email, password);
         } else {
             view.emailError(INVALID_EMAIL_FROMATE);
         }
@@ -78,7 +100,7 @@ public class RegisterPresenter implements AuthNetworkCallback {
 
     public void registerUserWithToken(Task<GoogleSignInAccount> task) {
         view.showProgressbar();
-        repository.authenticateUser(this, task);
+        authRepository.authenticateUser(this, task);
     }
 
     @Override
@@ -94,10 +116,60 @@ public class RegisterPresenter implements AuthNetworkCallback {
     }
 
     public boolean isAuthenticated() {
-        return repository.isAuthenticated();
+        return authRepository.isAuthenticated();
     }
 
     public String getCurrentAuthenticatedUsername() {
-        return repository.getCurrentAuthenticatedUsername();
+        return authRepository.getCurrentAuthenticatedUsername();
+    }
+
+    public void syncUserData() {
+        //download data from remote
+        //insert retrieved data into database
+        favoriteMealsRepository.getAllFavoriteMeals(this);
+    }
+
+    @Override
+    public void getAllFavoriteMealsRemoteOnSuccess(List<String> mealsIds) {
+        //insert retrieved data into database
+        compositeDisposable.add(
+                Observable
+                        .fromIterable(mealsIds)
+                        .subscribeOn(Schedulers.io())
+                        .flatMapSingle(mealId -> mealRepository.getMealById(mealId))
+                        .flatMapCompletable(mealsItemBooleanPair ->
+                                favoriteMealsRepository.insertFavoriteMeal(mealsItemBooleanPair.first))
+                        .subscribe(() -> {
+                            compositeDisposable.add(
+                                    favoriteMealsRepository
+                                            .getFavoriteMeals()
+                                            .flatMap(mealsItems ->
+                                                    Flowable.fromIterable(mealsItems)
+                                                            .map(mealsItem -> mealsItem.getIdMeal())
+                                                            .collect(Collectors.toList()).toFlowable())
+                                            .subscribe(mealsId -> {
+                                                favoriteMealsRepository
+                                                        .uploadFavoriteMeals(RegisterPresenter.this, mealsId);
+                                            }));
+                        }));
+    }
+
+    @Override
+    public void getAllFavoriteMealsRemoteOnFail(String errorMsg) {
+        view.onDataSyncedFail();
+    }
+
+    @Override
+    public void onUploadFavoriteMealsRemoteOnSuccess() {
+        view.onDataSyncedSuccess();
+    }
+
+    @Override
+    public void onUploadFavoriteMealsRemoteOnFail(String errorMsg) {
+        view.onDataSyncedFail();
+    }
+
+    public void close(){
+        compositeDisposable.clear();
     }
 }
