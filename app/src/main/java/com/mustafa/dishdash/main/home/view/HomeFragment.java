@@ -7,7 +7,6 @@ import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.view.LayoutInflater;
@@ -23,8 +22,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.jackandphantom.carouselrecyclerview.CarouselRecyclerview;
 import com.mustafa.dishdash.R;
 import com.mustafa.dishdash.main.data_layer.MealsRepository;
-import com.mustafa.dishdash.main.data_layer.db.FavoritesMealsDB;
-import com.mustafa.dishdash.main.data_layer.db.FavoritesMealsLocalDatasource;
+import com.mustafa.dishdash.main.data_layer.db.favorites.FavoritesMealsLocalDatasource;
 import com.mustafa.dishdash.main.data_layer.network.MealsRemoteDatasource;
 import com.mustafa.dishdash.main.data_layer.shared_prefs.TodayMealLocalDatasource;
 import com.mustafa.dishdash.main.home.presenter.HomePresenter;

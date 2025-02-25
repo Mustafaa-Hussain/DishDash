@@ -12,13 +12,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.mustafa.dishdash.R;
 import com.mustafa.dishdash.auth.AuthenticationActivity;
 import com.mustafa.dishdash.main.data_layer.FavoriteMealsRepository;
-import com.mustafa.dishdash.main.data_layer.db.FavoritesMealsLocalDatasource;
+import com.mustafa.dishdash.main.data_layer.db.favorites.FavoritesMealsLocalDatasource;
 import com.mustafa.dishdash.main.data_layer.firebase.favorite_meals.FavoritesRemoteDatasource;
 import com.mustafa.dishdash.main.profile.presenter.ProfilePresenter;
 

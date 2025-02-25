@@ -1,7 +1,8 @@
-package com.mustafa.dishdash.main.data_layer.db;
+package com.mustafa.dishdash.main.data_layer.db.favorites;
 
 import android.content.Context;
 
+import com.mustafa.dishdash.main.data_layer.db.SavedMealsDB;
 import com.mustafa.dishdash.main.data_layer.pojo.random_meal.MealsItem;
 
 import java.util.List;
@@ -14,7 +15,7 @@ public class FavoritesMealsLocalDatasource {
     private FavoritesMealsDAO dao;
 
     public FavoritesMealsLocalDatasource(Context context) {
-        dao = FavoritesMealsDB.getInstance(context).getFavoritesMealsDAO();
+        dao = SavedMealsDB.getInstance(context).getFavoritesMealsDAO();
     }
 
     public Flowable<List<MealsItem>> getFavoritesMeals() {

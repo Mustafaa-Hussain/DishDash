@@ -21,4 +21,7 @@ public interface RecipeDetailsView {
     void onSyncSuccess();
 
     void onSyncDataFailed();
+
+    void onAddedToFuturePlanesSuccess();
+    void onAddedToFuturePlanesFail();
 }

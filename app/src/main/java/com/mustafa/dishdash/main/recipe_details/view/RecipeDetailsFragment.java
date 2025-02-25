@@ -6,12 +6,14 @@ import static android.widget.Toast.LENGTH_SHORT;
 import static com.mustafa.dishdash.utils.Constants.ingredientImageUrl;
 
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
@@ -19,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -33,8 +36,10 @@ import com.mustafa.dishdash.auth.AuthenticationActivity;
 import com.mustafa.dishdash.auth.data_layer.AuthRepository;
 import com.mustafa.dishdash.auth.data_layer.firebase.UserRemoteDatasource;
 import com.mustafa.dishdash.main.data_layer.FavoriteMealsRepository;
+import com.mustafa.dishdash.main.data_layer.FuturePlanesRepository;
 import com.mustafa.dishdash.main.data_layer.MealsRepository;
-import com.mustafa.dishdash.main.data_layer.db.FavoritesMealsLocalDatasource;
+import com.mustafa.dishdash.main.data_layer.db.favorites.FavoritesMealsLocalDatasource;
+import com.mustafa.dishdash.main.data_layer.db.future_planes.FuturePlanesLocalDatasource;
 import com.mustafa.dishdash.main.data_layer.firebase.favorite_meals.FavoritesRemoteDatasource;
 import com.mustafa.dishdash.main.data_layer.network.MealsRemoteDatasource;
 import com.mustafa.dishdash.main.data_layer.pojo.random_meal.MealsItem;
@@ -44,6 +49,8 @@ import com.mustafa.dishdash.utils.Constants;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView;
+
+import java.util.Calendar;
 
 public class RecipeDetailsFragment extends Fragment implements RecipeDetailsView {
 
@@ -59,6 +66,7 @@ public class RecipeDetailsFragment extends Fragment implements RecipeDetailsView
     private TextView dismiss, login;
     private Animation openBanner, closeBanner, moveUp;
     private boolean isFavorite = false;
+    private final long WEEK = 7 * 24 * 60 * 60 * 1000;
 
     public RecipeDetailsFragment() {
     }
@@ -90,6 +98,7 @@ public class RecipeDetailsFragment extends Fragment implements RecipeDetailsView
                         new FavoritesMealsLocalDatasource(getContext())),
                 FavoriteMealsRepository.getInstance(new FavoritesMealsLocalDatasource(getContext())
                         , new FavoritesRemoteDatasource()),
+                FuturePlanesRepository.getInstance(new FuturePlanesLocalDatasource(getContext())),
                 AuthRepository.getInstance(new UserRemoteDatasource(getActivity())));
 
 
@@ -156,7 +165,8 @@ public class RecipeDetailsFragment extends Fragment implements RecipeDetailsView
 
     @Override
     public void onGetMealDetailsFail(String errorMessage) {
-        Snackbar.make(this.getView(), getString(R.string.you_are_not_connected), Snackbar.LENGTH_SHORT).show();
+        if (getContext() != null)
+            Toast.makeText(getContext(), getString(R.string.you_are_not_connected), Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -167,7 +177,8 @@ public class RecipeDetailsFragment extends Fragment implements RecipeDetailsView
 
     @Override
     public void onAddedToFavoritesFail() {
-        Toast.makeText(getContext(), getString(R.string.adding_to_favorite_error), LENGTH_SHORT).show();
+        if (getContext() != null)
+            Toast.makeText(getContext(), getString(R.string.adding_to_favorite_error), LENGTH_SHORT).show();
     }
 
     @Override
@@ -178,7 +189,8 @@ public class RecipeDetailsFragment extends Fragment implements RecipeDetailsView
 
     @Override
     public void onRemoveFavoriteFail(String errorMsg) {
-        Toast.makeText(getContext(), getString(R.string.failed_to_remove_favorite_meal), LENGTH_SHORT).show();
+        if (getContext() != null)
+            Toast.makeText(getContext(), getString(R.string.failed_to_remove_favorite_meal), LENGTH_SHORT).show();
     }
 
     @Override
@@ -193,6 +205,18 @@ public class RecipeDetailsFragment extends Fragment implements RecipeDetailsView
         if (getContext() != null) {
             Toast.makeText(getContext(), R.string.failed_to_sync_data, LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    public void onAddedToFuturePlanesSuccess() {
+        if (getContext() != null)
+            Toast.makeText(getContext(), R.string.added_to_future_planes, LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onAddedToFuturePlanesFail() {
+        if (getContext() != null)
+            Toast.makeText(getContext(), R.string.failed_to_add_to_future_planes, LENGTH_SHORT).show();
     }
 
 
@@ -218,10 +242,25 @@ public class RecipeDetailsFragment extends Fragment implements RecipeDetailsView
         addChipToGroup(mealItem.getStrArea());
 
         loadAndPlaceImage(mealItem.getStrMealThumb(), mealImage);
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DATE);
 
         addToCalender.setOnClickListener(view -> {
-            Toast.makeText(getContext(), "add to calender", LENGTH_SHORT).show();
+            DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(),
+                    R.style.DialogTheme,
+                    (datePicker, year1, month_index, day1) ->
+                            presenter.addMealToFuturePlane(mealItem, day1, month_index + 1, year1),
+                    year, month, day);
+            datePickerDialog.getDatePicker().setMinDate(calendar.getTimeInMillis());
+            datePickerDialog.getDatePicker().setMaxDate(calendar.getTimeInMillis() + WEEK);
+
+            datePickerDialog.show();
+            datePickerDialog.getButton(DatePickerDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(getContext(), R.color.black));
+            datePickerDialog.getButton(DatePickerDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(getContext(), R.color.primary));
         });
+
         toggleFavorite.setOnClickListener(view -> {
             if (!this.isFavorite) {
                 presenter.addMealToFavorites(mealItem);
@@ -286,5 +325,6 @@ public class RecipeDetailsFragment extends Fragment implements RecipeDetailsView
         chip.setText(text);
         mealCategories.addView(chip);
     }
-
 }
+
+

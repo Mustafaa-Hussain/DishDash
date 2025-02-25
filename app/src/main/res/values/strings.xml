@@ -51,4 +51,6 @@
     <string name="there_are_no_favorite_meals">There are no Favorite Meals!</string>
     <string name="data_synced">Data synced!</string>
     <string name="failed_to_sync_data">Failed To Sync Data</string>
+    <string name="added_to_future_planes">Added to Future planes!</string>
+    <string name="failed_to_add_to_future_planes">Failed added to Future planes</string>
 </resources>

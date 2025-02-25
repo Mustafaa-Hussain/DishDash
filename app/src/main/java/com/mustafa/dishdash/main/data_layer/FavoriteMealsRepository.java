@@ -1,6 +1,6 @@
 package com.mustafa.dishdash.main.data_layer;
 
-import com.mustafa.dishdash.main.data_layer.db.FavoritesMealsLocalDatasource;
+import com.mustafa.dishdash.main.data_layer.db.favorites.FavoritesMealsLocalDatasource;
 import com.mustafa.dishdash.main.data_layer.firebase.favorite_meals.FavoritesRemoteDatasource;
 import com.mustafa.dishdash.main.data_layer.pojo.random_meal.MealsItem;
 import com.mustafa.dishdash.main.data_layer.firebase.favorite_meals.GetRemoteFavoriteMealsCallBack;

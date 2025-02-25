@@ -1,4 +1,4 @@
-package com.mustafa.dishdash.main.data_layer.db;
+package com.mustafa.dishdash.main.data_layer.db.favorites;
 
 
 import androidx.room.Dao;

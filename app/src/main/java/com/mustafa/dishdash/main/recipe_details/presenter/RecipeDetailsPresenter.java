@@ -4,7 +4,9 @@ import android.annotation.SuppressLint;
 
 import com.mustafa.dishdash.auth.data_layer.AuthRepository;
 import com.mustafa.dishdash.main.data_layer.FavoriteMealsRepository;
+import com.mustafa.dishdash.main.data_layer.FuturePlanesRepository;
 import com.mustafa.dishdash.main.data_layer.MealsRepository;
+import com.mustafa.dishdash.main.data_layer.db.future_planes.entites.FuturePlane;
 import com.mustafa.dishdash.main.data_layer.firebase.favorite_meals.UploadRemoteFavoriteMealsCallBack;
 import com.mustafa.dishdash.main.data_layer.pojo.random_meal.MealsItem;
 import com.mustafa.dishdash.main.recipe_details.view.RecipeDetailsView;
@@ -18,16 +20,19 @@ public class RecipeDetailsPresenter implements UploadRemoteFavoriteMealsCallBack
     private RecipeDetailsView view;
     private MealsRepository mealsRepository;
     private FavoriteMealsRepository favoriteMealsRepository;
+    private FuturePlanesRepository futurePlanesRepository;
     private AuthRepository authRepository;
     private CompositeDisposable compositeDisposable;
 
     public RecipeDetailsPresenter(RecipeDetailsView view,
                                   MealsRepository mealsRepository,
                                   FavoriteMealsRepository favoriteMealsRepository,
+                                  FuturePlanesRepository futurePlanesRepository,
                                   AuthRepository authRepository) {
         this.view = view;
         this.mealsRepository = mealsRepository;
         this.favoriteMealsRepository = favoriteMealsRepository;
+        this.futurePlanesRepository = futurePlanesRepository;
         this.authRepository = authRepository;
         this.compositeDisposable = new CompositeDisposable();
     }
@@ -89,6 +94,19 @@ public class RecipeDetailsPresenter implements UploadRemoteFavoriteMealsCallBack
         }
     }
 
+    public void addMealToFuturePlane(MealsItem meal, int day, int month, int year) {
+        FuturePlane futurePlane = new FuturePlane(meal, day, month, year);
+        compositeDisposable.add(
+                futurePlanesRepository
+                        .insertFuturePlane(futurePlane)
+                        .subscribe(() -> view.onAddedToFuturePlanesSuccess(),
+                                error -> view.onAddedToFuturePlanesFail()));
+    }
+
+    public void close() {
+        compositeDisposable.clear();
+    }
+
     public String getYoutubeVideo(String strYoutube) {
         if (strYoutube.indexOf('&') != -1) {
             return strYoutube.substring(strYoutube.indexOf('=') + 1, strYoutube.indexOf('&'));
@@ -97,9 +115,6 @@ public class RecipeDetailsPresenter implements UploadRemoteFavoriteMealsCallBack
         }
     }
 
-    public void close() {
-        compositeDisposable.clear();
-    }
 
     @Override
     public void onUploadFavoriteMealsRemoteOnSuccess() {

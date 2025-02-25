@@ -3,7 +3,7 @@ package com.mustafa.dishdash.main.data_layer;
 import android.annotation.SuppressLint;
 import android.util.Pair;
 
-import com.mustafa.dishdash.main.data_layer.db.FavoritesMealsLocalDatasource;
+import com.mustafa.dishdash.main.data_layer.db.favorites.FavoritesMealsLocalDatasource;
 import com.mustafa.dishdash.main.data_layer.network.MealsRemoteDatasource;
 import com.mustafa.dishdash.main.data_layer.pojo.meals_short_details.MealsList;
 import com.mustafa.dishdash.main.data_layer.pojo.random_meal.Meal;

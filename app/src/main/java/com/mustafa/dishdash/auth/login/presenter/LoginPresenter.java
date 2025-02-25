@@ -114,26 +114,28 @@ public class LoginPresenter implements AuthNetworkCallback, GetRemoteFavoriteMea
     @Override
     public void getAllFavoriteMealsRemoteOnSuccess(List<String> mealsIds) {
         //insert retrieved data into database
-        compositeDisposable.add(
-                Observable
-                        .fromIterable(mealsIds)
-                        .subscribeOn(Schedulers.io())
-                        .flatMapSingle(mealId -> mealRepository.getMealById(mealId))
-                        .flatMapCompletable(mealsItemBooleanPair ->
-                                favoriteMealsRepository.insertFavoriteMeal(mealsItemBooleanPair.first))
-                        .subscribe(() -> {
-                            compositeDisposable.add(
-                                    favoriteMealsRepository
-                                            .getFavoriteMeals()
-                                            .flatMap(mealsItems ->
-                                                    Flowable.fromIterable(mealsItems)
-                                                            .map(mealsItem -> mealsItem.getIdMeal())
-                                                            .collect(Collectors.toList()).toFlowable())
-                                            .subscribe(mealsId -> {
-                                                favoriteMealsRepository
-                                                        .uploadFavoriteMeals(LoginPresenter.this, mealsId);
-                                            }));
-                        }));
+        if (mealsIds != null) {
+            compositeDisposable.add(
+                    Observable
+                            .fromIterable(mealsIds)
+                            .subscribeOn(Schedulers.io())
+                            .flatMapSingle(mealId -> mealRepository.getMealById(mealId))
+                            .flatMapCompletable(mealsItemBooleanPair ->
+                                    favoriteMealsRepository.insertFavoriteMeal(mealsItemBooleanPair.first))
+                            .subscribe(() -> {
+                                compositeDisposable.add(
+                                        favoriteMealsRepository
+                                                .getFavoriteMeals()
+                                                .flatMap(mealsItems ->
+                                                        Flowable.fromIterable(mealsItems)
+                                                                .map(mealsItem -> mealsItem.getIdMeal())
+                                                                .collect(Collectors.toList()).toFlowable())
+                                                .subscribe(mealsId -> {
+                                                    favoriteMealsRepository
+                                                            .uploadFavoriteMeals(LoginPresenter.this, mealsId);
+                                                }));
+                            }));
+        }
     }
 
     @Override
@@ -152,7 +154,7 @@ public class LoginPresenter implements AuthNetworkCallback, GetRemoteFavoriteMea
     }
 
 
-    public void close(){
+    public void close() {
         compositeDisposable.clear();
     }
 }
