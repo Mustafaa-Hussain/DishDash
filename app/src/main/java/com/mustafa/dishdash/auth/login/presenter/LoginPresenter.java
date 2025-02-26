@@ -5,6 +5,8 @@ import static com.mustafa.dishdash.auth.login.view.LoginView.FILL_PASSWORD;
 import static com.mustafa.dishdash.auth.login.view.LoginView.INVALID_EMAIL;
 import static com.mustafa.dishdash.auth.login.view.LoginView.PASSWORD_LENGTH;
 
+import android.util.Log;
+
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
@@ -12,33 +14,40 @@ import com.mustafa.dishdash.auth.data_layer.AuthRepository;
 import com.mustafa.dishdash.auth.data_layer.firebase.AuthNetworkCallback;
 import com.mustafa.dishdash.auth.login.view.LoginView;
 import com.mustafa.dishdash.main.data_layer.FavoriteMealsRepository;
+import com.mustafa.dishdash.main.data_layer.FuturePlanesRepository;
 import com.mustafa.dishdash.main.data_layer.MealsRepository;
+import com.mustafa.dishdash.main.data_layer.db.future_planes.entites.FuturePlane;
 import com.mustafa.dishdash.main.data_layer.firebase.favorite_meals.GetRemoteFavoriteMealsCallBack;
-import com.mustafa.dishdash.main.data_layer.firebase.favorite_meals.UploadRemoteFavoriteMealsCallBack;
+import com.mustafa.dishdash.main.data_layer.firebase.future_plane.entities.FuturePlaneEntity;
+import com.mustafa.dishdash.main.data_layer.firebase.future_plane.GetRemoteFuturePlanesCallBack;
 import com.mustafa.dishdash.utils.EmailValidation;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
-import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
-public class LoginPresenter implements AuthNetworkCallback, GetRemoteFavoriteMealsCallBack, UploadRemoteFavoriteMealsCallBack {
+public class LoginPresenter implements AuthNetworkCallback,
+        GetRemoteFavoriteMealsCallBack,
+        GetRemoteFuturePlanesCallBack {
     private final MealsRepository mealRepository;
     private AuthRepository authRepository;
     private FavoriteMealsRepository favoriteMealsRepository;
+    private FuturePlanesRepository futurePlanesRepository;
     private CompositeDisposable compositeDisposable;
     private LoginView view;
 
     public LoginPresenter(
             AuthRepository repository
             , FavoriteMealsRepository favoriteMealsRepository
+            , FuturePlanesRepository futurePlanesRepository
             , MealsRepository mealsRepository
             , LoginView view) {
         this.authRepository = repository;
         this.favoriteMealsRepository = favoriteMealsRepository;
+        this.futurePlanesRepository = futurePlanesRepository;
         this.mealRepository = mealsRepository;
         this.view = view;
         this.compositeDisposable = new CompositeDisposable();
@@ -109,6 +118,7 @@ public class LoginPresenter implements AuthNetworkCallback, GetRemoteFavoriteMea
         //download data from remote
         //insert retrieved data into database
         favoriteMealsRepository.getAllFavoriteMeals(this);
+        futurePlanesRepository.getAllFuturePlanes(this);
     }
 
     @Override
@@ -122,19 +132,9 @@ public class LoginPresenter implements AuthNetworkCallback, GetRemoteFavoriteMea
                             .flatMapSingle(mealId -> mealRepository.getMealById(mealId))
                             .flatMapCompletable(mealsItemBooleanPair ->
                                     favoriteMealsRepository.insertFavoriteMeal(mealsItemBooleanPair.first))
-                            .subscribe(() -> {
-                                compositeDisposable.add(
-                                        favoriteMealsRepository
-                                                .getFavoriteMeals()
-                                                .flatMap(mealsItems ->
-                                                        Flowable.fromIterable(mealsItems)
-                                                                .map(mealsItem -> mealsItem.getIdMeal())
-                                                                .collect(Collectors.toList()).toFlowable())
-                                                .subscribe(mealsId -> {
-                                                    favoriteMealsRepository
-                                                            .uploadFavoriteMeals(LoginPresenter.this, mealsId);
-                                                }));
-                            }));
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(() -> view.onDataSyncedSuccess(),
+                                    error -> view.onDataSyncedFail()));
         }
     }
 
@@ -144,17 +144,35 @@ public class LoginPresenter implements AuthNetworkCallback, GetRemoteFavoriteMea
     }
 
     @Override
-    public void onUploadFavoriteMealsRemoteOnSuccess() {
-        view.onDataSyncedSuccess();
+    public void getAllFuturePlanesRemoteOnSuccess(List<FuturePlaneEntity> futurePlanes) {
+        if (futurePlanes != null) {
+            compositeDisposable.add(
+                    Observable
+                            .fromIterable(futurePlanes)
+                            .subscribeOn(Schedulers.io())
+                            .flatMapSingle(futurePlaneEntity ->
+                                    mealRepository.getMealById(futurePlaneEntity.getMealId())
+                                            .map(mealsItemBooleanPair ->
+                                                    new FuturePlane(mealsItemBooleanPair.first,
+                                                            futurePlaneEntity.getDay(),
+                                                            futurePlaneEntity.getMonth(),
+                                                            futurePlaneEntity.getYear())))
+                            .flatMapCompletable(futurePlane ->
+                                    futurePlanesRepository
+                                            .insertFuturePlane(futurePlane))
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(() -> view.onDataSyncedSuccess(),
+                                    error -> view.onDataSyncedFail()));
+        }
     }
 
     @Override
-    public void onUploadFavoriteMealsRemoteOnFail(String errorMsg) {
+    public void getAllFuturePlanesRemoteOnFail(String errorMsg) {
         view.onDataSyncedFail();
     }
-
 
     public void close() {
         compositeDisposable.clear();
     }
+
 }

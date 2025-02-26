@@ -8,6 +8,8 @@ import com.mustafa.dishdash.main.data_layer.FuturePlanesRepository;
 import com.mustafa.dishdash.main.data_layer.MealsRepository;
 import com.mustafa.dishdash.main.data_layer.db.future_planes.entites.FuturePlane;
 import com.mustafa.dishdash.main.data_layer.firebase.favorite_meals.UploadRemoteFavoriteMealsCallBack;
+import com.mustafa.dishdash.main.data_layer.firebase.future_plane.entities.FuturePlaneEntity;
+import com.mustafa.dishdash.main.data_layer.firebase.future_plane.UploadFuturePlanesCallBack;
 import com.mustafa.dishdash.main.data_layer.pojo.random_meal.MealsItem;
 import com.mustafa.dishdash.main.recipe_details.view.RecipeDetailsView;
 
@@ -16,7 +18,7 @@ import java.util.stream.Collectors;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 
-public class RecipeDetailsPresenter implements UploadRemoteFavoriteMealsCallBack {
+public class RecipeDetailsPresenter implements UploadRemoteFavoriteMealsCallBack, UploadFuturePlanesCallBack {
     private RecipeDetailsView view;
     private MealsRepository mealsRepository;
     private FavoriteMealsRepository favoriteMealsRepository;
@@ -99,8 +101,29 @@ public class RecipeDetailsPresenter implements UploadRemoteFavoriteMealsCallBack
         compositeDisposable.add(
                 futurePlanesRepository
                         .insertFuturePlane(futurePlane)
-                        .subscribe(() -> view.onAddedToFuturePlanesSuccess(),
+                        .subscribe(() -> {
+                                    view.onAddedToFuturePlanesSuccess();
+                                    syncFutureData();
+                                },
                                 error -> view.onAddedToFuturePlanesFail()));
+    }
+
+    private void syncFutureData() {
+        compositeDisposable.add(
+                futurePlanesRepository
+                        .getAllFuturePlanes()
+                        .flatMap(futurePlanes ->
+                                Flowable.fromIterable(futurePlanes)
+                                        .map(futurePlane ->
+                                                new FuturePlaneEntity(futurePlane.getIdMeal(),
+                                                        futurePlane.getDay(),
+                                                        futurePlane.getMonth(),
+                                                        futurePlane.getYear()))
+                                        .collect(Collectors.toList()).toFlowable())
+                        .subscribe(futurePlaneEntities -> {
+                            futurePlanesRepository
+                                    .uploadFuturePlanes(RecipeDetailsPresenter.this, futurePlaneEntities);
+                        }));
     }
 
     public void close() {
@@ -123,6 +146,16 @@ public class RecipeDetailsPresenter implements UploadRemoteFavoriteMealsCallBack
 
     @Override
     public void onUploadFavoriteMealsRemoteOnFail(String errorMsg) {
+        view.onSyncDataFailed();
+    }
+
+    @Override
+    public void onUploadFuturePlanesRemoteOnSuccess() {
+        view.onSyncSuccess();
+    }
+
+    @Override
+    public void onUploadFuturePlanesRemoteOnFail(String userNotLoggedIn) {
         view.onSyncDataFailed();
     }
 }

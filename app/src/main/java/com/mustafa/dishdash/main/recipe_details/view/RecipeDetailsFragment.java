@@ -41,6 +41,7 @@ import com.mustafa.dishdash.main.data_layer.MealsRepository;
 import com.mustafa.dishdash.main.data_layer.db.favorites.FavoritesMealsLocalDatasource;
 import com.mustafa.dishdash.main.data_layer.db.future_planes.FuturePlanesLocalDatasource;
 import com.mustafa.dishdash.main.data_layer.firebase.favorite_meals.FavoritesRemoteDatasource;
+import com.mustafa.dishdash.main.data_layer.firebase.future_plane.FuturePlanesRemoteDatasource;
 import com.mustafa.dishdash.main.data_layer.network.MealsRemoteDatasource;
 import com.mustafa.dishdash.main.data_layer.pojo.random_meal.MealsItem;
 import com.mustafa.dishdash.main.data_layer.shared_prefs.TodayMealLocalDatasource;
@@ -98,7 +99,8 @@ public class RecipeDetailsFragment extends Fragment implements RecipeDetailsView
                         new FavoritesMealsLocalDatasource(getContext())),
                 FavoriteMealsRepository.getInstance(new FavoritesMealsLocalDatasource(getContext())
                         , new FavoritesRemoteDatasource()),
-                FuturePlanesRepository.getInstance(new FuturePlanesLocalDatasource(getContext())),
+                FuturePlanesRepository.getInstance(new FuturePlanesLocalDatasource(getContext()),
+                        new FuturePlanesRemoteDatasource()),
                 AuthRepository.getInstance(new UserRemoteDatasource(getActivity())));
 
 
@@ -216,7 +218,7 @@ public class RecipeDetailsFragment extends Fragment implements RecipeDetailsView
     @Override
     public void onAddedToFuturePlanesFail() {
         if (getContext() != null)
-            Toast.makeText(getContext(), R.string.failed_to_add_to_future_planes, LENGTH_SHORT).show();
+            Toast.makeText(getContext(), R.string.already_exists_in_this_day, LENGTH_SHORT).show();
     }
 
 

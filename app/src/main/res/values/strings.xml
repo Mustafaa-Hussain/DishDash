@@ -53,4 +53,10 @@
     <string name="failed_to_sync_data">Failed To Sync Data</string>
     <string name="added_to_future_planes">Added to Future planes!</string>
     <string name="failed_to_add_to_future_planes">Failed added to Future planes</string>
+    <string name="delete_future_plane">Delete future plane.</string>
+    <string name="failed_to_load_future_planes">Failed to load Future Planes!</string>
+    <string name="deleted">Deleted!</string>
+    <string name="are_sure_you_want_to_remove_this_meal_from_planes">Are sure you want to remove this meal from planes!</string>
+    <string name="already_exists_in_this_day">Already Exists in this day!</string>
+    <string name="planes">Planes</string>
 </resources>

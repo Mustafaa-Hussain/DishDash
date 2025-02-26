@@ -13,9 +13,9 @@
         android:icon="@drawable/favorites_icon"
         android:title="@string/favorites" />
     <item
-        android:id="@+id/calenderFragment"
+        android:id="@+id/planesFragment"
         android:icon="@drawable/calender_icon"
-        android:title="@string/calender" />
+        android:title="@string/planes" />
     <item
         android:id="@+id/profileFragment"
         android:icon="@drawable/profile_icon"

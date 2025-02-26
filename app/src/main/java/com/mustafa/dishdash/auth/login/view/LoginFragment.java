@@ -28,9 +28,12 @@ import com.mustafa.dishdash.auth.data_layer.AuthRepository;
 import com.mustafa.dishdash.auth.data_layer.firebase.UserRemoteDatasource;
 import com.mustafa.dishdash.auth.login.presenter.LoginPresenter;
 import com.mustafa.dishdash.main.data_layer.FavoriteMealsRepository;
+import com.mustafa.dishdash.main.data_layer.FuturePlanesRepository;
 import com.mustafa.dishdash.main.data_layer.MealsRepository;
 import com.mustafa.dishdash.main.data_layer.db.favorites.FavoritesMealsLocalDatasource;
+import com.mustafa.dishdash.main.data_layer.db.future_planes.FuturePlanesLocalDatasource;
 import com.mustafa.dishdash.main.data_layer.firebase.favorite_meals.FavoritesRemoteDatasource;
+import com.mustafa.dishdash.main.data_layer.firebase.future_plane.FuturePlanesRemoteDatasource;
 import com.mustafa.dishdash.main.data_layer.network.MealsRemoteDatasource;
 import com.mustafa.dishdash.main.data_layer.shared_prefs.TodayMealLocalDatasource;
 
@@ -67,8 +70,13 @@ public class LoginFragment extends Fragment implements LoginView {
         setupUI(view);
 
         presenter = new LoginPresenter(AuthRepository.getInstance(new UserRemoteDatasource(getActivity())),
-                FavoriteMealsRepository.getInstance(new FavoritesMealsLocalDatasource(getContext()), new FavoritesRemoteDatasource()),
-                MealsRepository.getInstance(new MealsRemoteDatasource(), new TodayMealLocalDatasource(getContext()), new FavoritesMealsLocalDatasource(getContext())),
+                FavoriteMealsRepository.getInstance(new FavoritesMealsLocalDatasource(getContext()),
+                        new FavoritesRemoteDatasource()),
+                FuturePlanesRepository.getInstance(new FuturePlanesLocalDatasource(getContext()),
+                        new FuturePlanesRemoteDatasource()),
+                MealsRepository.getInstance(new MealsRemoteDatasource(),
+                        new TodayMealLocalDatasource(getContext()),
+                        new FavoritesMealsLocalDatasource(getContext())),
                 this);
 
         gotoRegistration.setOnClickListener(v -> {
@@ -127,9 +135,11 @@ public class LoginFragment extends Fragment implements LoginView {
 
     @Override
     public void onAuthenticationSuccess(String username) {
-        Toast.makeText(getContext(), "Login successfully", Toast.LENGTH_SHORT).show();
-        presenter.syncUserData();
-        getActivity().finish();
+        if (getActivity() != null) {
+            Toast.makeText(getContext(), "Login successfully", Toast.LENGTH_SHORT).show();
+            presenter.syncUserData();
+            getActivity().finish();
+        }
     }
 
     @Override

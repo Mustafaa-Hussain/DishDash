@@ -27,4 +27,7 @@ public interface FuturePlanesDAO {
 
     @Delete
     Completable deleteFuturePlane(FuturePlane futurePlane);
+
+    @Query("delete from future_planes")
+    Completable clearFuturePlanes();
 }

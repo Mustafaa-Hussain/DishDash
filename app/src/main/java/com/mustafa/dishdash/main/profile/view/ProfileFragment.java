@@ -17,8 +17,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.mustafa.dishdash.R;
 import com.mustafa.dishdash.auth.AuthenticationActivity;
 import com.mustafa.dishdash.main.data_layer.FavoriteMealsRepository;
+import com.mustafa.dishdash.main.data_layer.FuturePlanesRepository;
 import com.mustafa.dishdash.main.data_layer.db.favorites.FavoritesMealsLocalDatasource;
+import com.mustafa.dishdash.main.data_layer.db.future_planes.FuturePlanesLocalDatasource;
 import com.mustafa.dishdash.main.data_layer.firebase.favorite_meals.FavoritesRemoteDatasource;
+import com.mustafa.dishdash.main.data_layer.firebase.future_plane.FuturePlanesRemoteDatasource;
 import com.mustafa.dishdash.main.profile.presenter.ProfilePresenter;
 
 public class ProfileFragment extends Fragment implements ProfileView {
@@ -52,7 +55,11 @@ public class ProfileFragment extends Fragment implements ProfileView {
         });
         setupUI(view);
 
-        presenter = new ProfilePresenter(FavoriteMealsRepository.getInstance(new FavoritesMealsLocalDatasource(getContext())
+        presenter = new ProfilePresenter(
+                FuturePlanesRepository.getInstance(
+                        new FuturePlanesLocalDatasource(getContext()),
+                        new FuturePlanesRemoteDatasource())
+                , FavoriteMealsRepository.getInstance(new FavoritesMealsLocalDatasource(getContext())
                 , new FavoritesRemoteDatasource())
                 , this);
 

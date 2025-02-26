@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.util.Log;
 
 import com.mustafa.dishdash.main.data_layer.FavoriteMealsRepository;
+import com.mustafa.dishdash.main.data_layer.FuturePlanesRepository;
 import com.mustafa.dishdash.main.data_layer.MealsRepository;
 import com.mustafa.dishdash.main.data_layer.firebase.favorite_meals.GetRemoteFavoriteMealsCallBack;
 import com.mustafa.dishdash.main.data_layer.firebase.favorite_meals.UploadRemoteFavoriteMealsCallBack;
@@ -22,12 +23,15 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class ProfilePresenter {
     private FavoriteMealsRepository favoriteMealsRepository;
-    private CompositeDisposable compositeDisposable;
+    private FuturePlanesRepository futurePlanesRepository;
     private ProfileView view;
+    private CompositeDisposable compositeDisposable;
 
-    public ProfilePresenter(FavoriteMealsRepository favoriteMealsRepository
+    public ProfilePresenter(FuturePlanesRepository futurePlanesRepository
+            , FavoriteMealsRepository favoriteMealsRepository
             , ProfileView view) {
         this.favoriteMealsRepository = favoriteMealsRepository;
+        this.futurePlanesRepository = futurePlanesRepository;
         this.view = view;
         this.compositeDisposable = new CompositeDisposable();
     }
@@ -36,6 +40,11 @@ public class ProfilePresenter {
         compositeDisposable.add(
                 favoriteMealsRepository
                         .clearFavorites()
+                        .subscribe());
+
+        compositeDisposable.add(
+                futurePlanesRepository
+                        .clearFuturePlanes()
                         .subscribe());
     }
 

@@ -34,4 +34,8 @@ public class FuturePlanesLocalDatasource {
         return dao.deleteFuturePlane(futurePlane);
     }
 
+    public Completable clearFuturePlanes() {
+        return dao.clearFuturePlanes();
+    }
+
 }

@@ -20,7 +20,8 @@ public class FavoriteMealsRepository {
 
     private FavoritesRemoteDatasource favoritesRemoteDatasource;
 
-    private FavoriteMealsRepository(FavoritesMealsLocalDatasource favoritesMealsLocalDatasource
+    private FavoriteMealsRepository(
+            FavoritesMealsLocalDatasource favoritesMealsLocalDatasource
             , FavoritesRemoteDatasource favoritesRemoteDatasource) {
         this.favoritesMealsLocalDatasource = favoritesMealsLocalDatasource;
         this.favoritesRemoteDatasource = favoritesRemoteDatasource;

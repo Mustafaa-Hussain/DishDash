@@ -2,6 +2,10 @@ package com.mustafa.dishdash.main.data_layer;
 
 import com.mustafa.dishdash.main.data_layer.db.future_planes.FuturePlanesLocalDatasource;
 import com.mustafa.dishdash.main.data_layer.db.future_planes.entites.FuturePlane;
+import com.mustafa.dishdash.main.data_layer.firebase.future_plane.entities.FuturePlaneEntity;
+import com.mustafa.dishdash.main.data_layer.firebase.future_plane.FuturePlanesRemoteDatasource;
+import com.mustafa.dishdash.main.data_layer.firebase.future_plane.GetRemoteFuturePlanesCallBack;
+import com.mustafa.dishdash.main.data_layer.firebase.future_plane.UploadFuturePlanesCallBack;
 
 import java.util.List;
 
@@ -14,14 +18,19 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 public class FuturePlanesRepository {
     private static FuturePlanesRepository instance;
     private FuturePlanesLocalDatasource futurePlanesLocalDatasource;
+    private FuturePlanesRemoteDatasource futurePlanesRemoteDatasource;
 
-    private FuturePlanesRepository(FuturePlanesLocalDatasource futurePlanesLocalDatasource) {
+    private FuturePlanesRepository(FuturePlanesLocalDatasource futurePlanesLocalDatasource
+            , FuturePlanesRemoteDatasource futurePlanesRemoteDatasource) {
         this.futurePlanesLocalDatasource = futurePlanesLocalDatasource;
+        this.futurePlanesRemoteDatasource = futurePlanesRemoteDatasource;
     }
 
-    public static FuturePlanesRepository getInstance(FuturePlanesLocalDatasource futurePlanesLocalDatasource) {
+    public static FuturePlanesRepository getInstance(FuturePlanesLocalDatasource futurePlanesLocalDatasource
+            , FuturePlanesRemoteDatasource futurePlanesRemoteDatasource) {
         if (instance == null) {
-            instance = new FuturePlanesRepository(futurePlanesLocalDatasource);
+            instance = new FuturePlanesRepository(futurePlanesLocalDatasource,
+                    futurePlanesRemoteDatasource);
         }
         return instance;
     }
@@ -53,4 +62,20 @@ public class FuturePlanesRepository {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
+
+    public Completable clearFuturePlanes() {
+        return futurePlanesLocalDatasource
+                .clearFuturePlanes()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public void getAllFuturePlanes(GetRemoteFuturePlanesCallBack callBack) {
+        futurePlanesRemoteDatasource.getFuturePlanes(callBack);
+    }
+
+    public void uploadFuturePlanes(UploadFuturePlanesCallBack callBack, List<FuturePlaneEntity> futurePlanes) {
+        futurePlanesRemoteDatasource.uploadFuturePlanes(callBack, futurePlanes);
+    }
+
 }
