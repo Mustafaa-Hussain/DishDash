@@ -45,4 +45,8 @@ public class AuthRepository {
         return remoteDatasource.getCurrentAuthenticatedUserEmail();
     }
 
+    public void logoutUser(){
+        remoteDatasource.logoutUser();
+    }
+
 }

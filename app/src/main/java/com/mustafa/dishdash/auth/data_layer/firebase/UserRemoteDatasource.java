@@ -15,21 +15,21 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.UserProfileChangeRequest;
 
 public class UserRemoteDatasource {
-    private FirebaseAuth mAuth;
+    private FirebaseAuth auth;
     private Activity activity;
 
     public UserRemoteDatasource(Activity activity) {
         this.activity = activity;
-        mAuth = FirebaseAuth.getInstance();
+        auth = FirebaseAuth.getInstance();
     }
 
     public void authenticateUser(AuthNetworkCallback callback, String email, String password) {
-        mAuth.signInWithEmailAndPassword(email, password)
+        auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(activity, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            callback.onAuthSuccess(mAuth.getCurrentUser());
+                            callback.onAuthSuccess(auth.getCurrentUser());
 
                         } else {
                             callback.onAuthFailed(task.getException().getMessage());
@@ -59,7 +59,7 @@ public class UserRemoteDatasource {
     }
 
     public void registerUser(AuthNetworkCallback callback, String username, String email, String password) {
-        mAuth.createUserWithEmailAndPassword(email, password)
+        auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(activity, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
@@ -77,24 +77,24 @@ public class UserRemoteDatasource {
                 .setDisplayName(username)
                 .build();
 
-        mAuth.getCurrentUser().updateProfile(profileUpdates)
+        auth.getCurrentUser().updateProfile(profileUpdates)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
-                            callback.onAuthSuccess(mAuth.getCurrentUser());
+                            callback.onAuthSuccess(auth.getCurrentUser());
                         }
                     }
                 });
     }
 
     public boolean isAuthenticated() {
-        return mAuth.getCurrentUser() != null;
+        return auth.getCurrentUser() != null;
     }
 
     public String getCurrentAuthenticatedUsername() {
         if (isAuthenticated()) {
-            return mAuth.getCurrentUser().getDisplayName();
+            return auth.getCurrentUser().getDisplayName();
         } else {
             return null;
         }
@@ -102,9 +102,13 @@ public class UserRemoteDatasource {
 
     public String getCurrentAuthenticatedUserEmail() {
         if (isAuthenticated()) {
-            return mAuth.getCurrentUser().getEmail();
+            return auth.getCurrentUser().getEmail();
         } else {
             return null;
         }
+    }
+
+    public void logoutUser() {
+        auth.signOut();
     }
 }

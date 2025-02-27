@@ -11,7 +11,7 @@
     <string name="favorites">Favorites</string>
     <string name="calender">Calender</string>
     <string name="profile">Profile</string>
-    <string name="other_recipes">Other Recipes</string>
+    <string name="more_recipes">More Recipes</string>
     <string name="details">Details</string>
     <string name="recipe_details">Recipe details</string>
     <string name="meal_title">Meal title</string>
@@ -40,9 +40,11 @@
     <string name="fill_confirm_password">Fill confirm password</string>
     <string name="added_to_favorites">Added to Favorites</string>
     <string name="you_are_not_logged_in">You are not logged in!</string>
+    <string name="no_internet_connection">No Internet Connection!</string>
     <string name="dismiss">Dismiss</string>
     <string name="you_are_not_connected">You are not Connected</string>
     <string name="are_sure_you_want_to_remove_this_meal_from_favorites">Are sure you want to remove this meal from favorites!</string>
+    <string name="are_sure_you_want_to_logout">Are sure you want to Logout!</string>
     <string name="remove">Remove</string>
     <string name="cancel">Cancel</string>
     <string name="favorite_meal_removed">Favorite Meal Removed!</string>
@@ -59,4 +61,5 @@
     <string name="are_sure_you_want_to_remove_this_meal_from_planes">Are sure you want to remove this meal from planes!</string>
     <string name="already_exists_in_this_day">Already Exists in this day!</string>
     <string name="planes">Planes</string>
+    <string name="yes">Yes</string>
 </resources>

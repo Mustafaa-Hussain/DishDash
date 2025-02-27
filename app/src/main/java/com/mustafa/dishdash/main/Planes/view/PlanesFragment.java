@@ -1,6 +1,9 @@
 package com.mustafa.dishdash.main.Planes.view;
 
+import static android.view.View.VISIBLE;
+
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -12,10 +15,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.mustafa.dishdash.R;
+import com.mustafa.dishdash.auth.AuthenticationActivity;
+import com.mustafa.dishdash.auth.data_layer.AuthRepository;
+import com.mustafa.dishdash.auth.data_layer.firebase.UserRemoteDatasource;
 import com.mustafa.dishdash.main.Planes.presenter.PlanesPresenter;
+import com.mustafa.dishdash.main.Planes.view.adapter.FuturePlaneClickListener;
+import com.mustafa.dishdash.main.Planes.view.adapter.PlanesAdapter;
 import com.mustafa.dishdash.main.data_layer.FuturePlanesRepository;
 import com.mustafa.dishdash.main.data_layer.db.future_planes.FuturePlanesLocalDatasource;
 import com.mustafa.dishdash.main.data_layer.db.future_planes.entites.FuturePlane;
@@ -24,6 +33,9 @@ import com.mustafa.dishdash.main.data_layer.firebase.future_plane.FuturePlanesRe
 import java.util.List;
 
 public class PlanesFragment extends Fragment implements PlanesView, FuturePlaneClickListener {
+    private RecyclerView recyclerView;
+    private View notLoggedInGroup;
+    private TextView login;
     private PlanesAdapter adapter;
     private PlanesPresenter presenter;
 
@@ -45,8 +57,14 @@ public class PlanesFragment extends Fragment implements PlanesView, FuturePlaneC
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        recyclerView = view.findViewById(R.id.future_planes_recycler_view);
+        notLoggedInGroup = view.findViewById(R.id.not_logged_in_group);
+        login = view.findViewById(R.id.login);
 
-        RecyclerView recyclerView = view.findViewById(R.id.future_planes_recycler_view);
+        login.setOnClickListener(v -> {
+            startActivity(new Intent(getContext(), AuthenticationActivity.class));
+        });
+
         adapter = new PlanesAdapter(getContext(), this);
         recyclerView.setAdapter(adapter);
 
@@ -54,9 +72,15 @@ public class PlanesFragment extends Fragment implements PlanesView, FuturePlaneC
                 FuturePlanesRepository
                         .getInstance(new FuturePlanesLocalDatasource(getContext()),
                                 new FuturePlanesRemoteDatasource()),
+                AuthRepository.getInstance(new UserRemoteDatasource(getActivity())),
                 this);
 
+    }
+
+    @Override
+    public void onResume() {
         presenter.getAllFuturePlanes();
+        super.onResume();
     }
 
     @Override
@@ -67,6 +91,7 @@ public class PlanesFragment extends Fragment implements PlanesView, FuturePlaneC
 
     @Override
     public void onGetAllFuturePlanesSuccess(List<FuturePlane> futurePlanes) {
+        notLoggedInGroup.setVisibility(View.GONE);
         adapter.setFuturePlanes(futurePlanes);
     }
 
@@ -100,6 +125,11 @@ public class PlanesFragment extends Fragment implements PlanesView, FuturePlaneC
         if (getContext() != null) {
             Toast.makeText(getContext(), R.string.data_synced, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    public void userNotLoggedIn() {
+        notLoggedInGroup.setVisibility(VISIBLE);
     }
 
     @Override

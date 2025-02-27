@@ -1,4 +1,4 @@
-package com.mustafa.dishdash.main.favorites.view;
+package com.mustafa.dishdash.main.favorites.view.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;

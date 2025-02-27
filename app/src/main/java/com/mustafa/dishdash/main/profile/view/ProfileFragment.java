@@ -1,5 +1,9 @@
 package com.mustafa.dishdash.main.profile.view;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -16,6 +20,8 @@ import android.widget.TextView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.mustafa.dishdash.R;
 import com.mustafa.dishdash.auth.AuthenticationActivity;
+import com.mustafa.dishdash.auth.data_layer.AuthRepository;
+import com.mustafa.dishdash.auth.data_layer.firebase.UserRemoteDatasource;
 import com.mustafa.dishdash.main.data_layer.FavoriteMealsRepository;
 import com.mustafa.dishdash.main.data_layer.FuturePlanesRepository;
 import com.mustafa.dishdash.main.data_layer.db.favorites.FavoritesMealsLocalDatasource;
@@ -28,6 +34,8 @@ public class ProfileFragment extends Fragment implements ProfileView {
 
     private Button btnSignOut;
 
+    private View notLoggedInGroup;
+    private TextView login;
     private ProfilePresenter presenter;
 
     public ProfileFragment() {
@@ -61,13 +69,48 @@ public class ProfileFragment extends Fragment implements ProfileView {
                         new FuturePlanesRemoteDatasource())
                 , FavoriteMealsRepository.getInstance(new FavoritesMealsLocalDatasource(getContext())
                 , new FavoritesRemoteDatasource())
+                , AuthRepository.getInstance(new UserRemoteDatasource(getActivity()))
                 , this);
 
 
-        btnSignOut.setOnClickListener(v -> {
-            presenter.clearFavorites();
-            FirebaseAuth.getInstance().signOut();
+        login.setOnClickListener(v -> {
+            startActivity(new Intent(getContext(), AuthenticationActivity.class));
         });
+        btnSignOut.setOnClickListener(v -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage(R.string.are_sure_you_want_to_logout)
+                    .setPositiveButton(R.string.yes, (dialogInterface, i) -> {
+                        presenter.logoutUser();
+                        showUserNotLoggedIn();
+                    })
+                    .setNegativeButton(R.string.cancel, (dialogInterface, i) -> {
+                        dialogInterface.dismiss();
+                    });
+            builder.create().show();
+
+        });
+    }
+
+    @Override
+    public void onResume() {
+        if (!presenter.isAuthenticated()) {
+            showUserNotLoggedIn();
+        } else {
+            hideUserNotLoggedIn();
+        }
+        super.onResume();
+    }
+
+    private void showUserNotLoggedIn() {
+        notLoggedInGroup.setVisibility(VISIBLE);
+        //hide other component
+        btnSignOut.setVisibility(GONE);
+    }
+
+    private void hideUserNotLoggedIn() {
+        notLoggedInGroup.setVisibility(GONE);
+
+        btnSignOut.setVisibility(VISIBLE);
     }
 
     @Override
@@ -78,6 +121,8 @@ public class ProfileFragment extends Fragment implements ProfileView {
 
     private void setupUI(View view) {
         btnSignOut = view.findViewById(R.id.sign_out);
+        notLoggedInGroup = view.findViewById(R.id.not_logged_in_group);
+        login = view.findViewById(R.id.login);
 
     }
 }

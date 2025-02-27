@@ -15,4 +15,6 @@ public interface HomeView {
     void randomMealResultSuccess(MealsItem meal);
 
     void randomMealResultFail(String errorMessage);
+    void registeredUser(String username);
+    void userNotLoggedIn();
 }

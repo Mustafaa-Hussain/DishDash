@@ -1,5 +1,6 @@
 package com.mustafa.dishdash.main.Planes.presenter;
 
+import com.mustafa.dishdash.auth.data_layer.AuthRepository;
 import com.mustafa.dishdash.main.Planes.view.PlanesView;
 import com.mustafa.dishdash.main.data_layer.FuturePlanesRepository;
 import com.mustafa.dishdash.main.data_layer.db.future_planes.entites.FuturePlane;
@@ -14,21 +15,29 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable;
 public class PlanesPresenter implements UploadFuturePlanesCallBack {
     private CompositeDisposable compositeDisposable;
     private FuturePlanesRepository futurePlanesRepository;
+    private AuthRepository authRepository;
     private PlanesView view;
 
-    public PlanesPresenter(FuturePlanesRepository futurePlanesRepository, PlanesView view) {
+    public PlanesPresenter(FuturePlanesRepository futurePlanesRepository
+            , AuthRepository authRepository
+            , PlanesView view) {
         this.futurePlanesRepository = futurePlanesRepository;
+        this.authRepository = authRepository;
         this.view = view;
         compositeDisposable = new CompositeDisposable();
     }
 
     public void getAllFuturePlanes() {
-        compositeDisposable.add(
-                futurePlanesRepository
-                        .getAllFuturePlanes()
-                        .subscribe(futurePlanes ->
-                                        view.onGetAllFuturePlanesSuccess(futurePlanes),
-                                error -> view.onGetAllFuturePlanesFail(error.getMessage())));
+        if (authRepository.isAuthenticated()) {
+            compositeDisposable.add(
+                    futurePlanesRepository
+                            .getAllFuturePlanes()
+                            .subscribe(futurePlanes ->
+                                            view.onGetAllFuturePlanesSuccess(futurePlanes),
+                                    error -> view.onGetAllFuturePlanesFail(error.getMessage())));
+        } else {
+            view.userNotLoggedIn();
+        }
     }
 
     public void deleteFuturePlanes(FuturePlane futurePlane) {

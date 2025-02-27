@@ -1,10 +1,15 @@
 package com.mustafa.dishdash.main.home.view;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -14,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
@@ -21,6 +27,9 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.jackandphantom.carouselrecyclerview.CarouselRecyclerview;
 import com.mustafa.dishdash.R;
+import com.mustafa.dishdash.auth.AuthenticationActivity;
+import com.mustafa.dishdash.auth.data_layer.AuthRepository;
+import com.mustafa.dishdash.auth.data_layer.firebase.UserRemoteDatasource;
 import com.mustafa.dishdash.main.data_layer.MealsRepository;
 import com.mustafa.dishdash.main.data_layer.db.favorites.FavoritesMealsLocalDatasource;
 import com.mustafa.dishdash.main.data_layer.network.MealsRemoteDatasource;
@@ -36,6 +45,7 @@ public class HomeFragment extends Fragment implements HomeView, MealClickListene
 
     private CardView mealCard;
     private TextView username;
+    private TextView login;
     private ImageView randomMealImage;
     private TextView randomMealTitle;
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -44,6 +54,8 @@ public class HomeFragment extends Fragment implements HomeView, MealClickListene
 
     private String randomMealId;
     private HomePresenter presenter;
+    private ConstraintLayout homeView;
+    private View noInternetConnectionGroup;
 
     public HomeFragment() {
     }
@@ -66,17 +78,13 @@ public class HomeFragment extends Fragment implements HomeView, MealClickListene
         setupUI(view);
         setupClickListener();
 
-        swipeRefreshLayout.setRefreshing(true);
-
         presenter = new HomePresenter(this,
                 MealsRepository.getInstance(new MealsRemoteDatasource(),
                         new TodayMealLocalDatasource(getContext()),
-                        new FavoritesMealsLocalDatasource(getContext())));
+                        new FavoritesMealsLocalDatasource(getContext())),
+                AuthRepository.getInstance(new UserRemoteDatasource(getActivity())));
 
-        if (FirebaseAuth.getInstance().getCurrentUser() != null)
-            username.setText(FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
-
-
+        swipeRefreshLayout.setRefreshing(true);
         presenter.getRandomMeal();
         presenter.getAllMeals();
 
@@ -86,7 +94,14 @@ public class HomeFragment extends Fragment implements HomeView, MealClickListene
         swipeRefreshLayout.setOnRefreshListener(() -> {
             presenter.getRandomMeal();
             presenter.getAllMeals();
+            presenter.getRegisteredUser();
         });
+    }
+
+    @Override
+    public void onResume() {
+        presenter.getRegisteredUser();
+        super.onResume();
     }
 
     @Override
@@ -96,13 +111,15 @@ public class HomeFragment extends Fragment implements HomeView, MealClickListene
     }
 
     private void setupUI(View view) {
-
         mealCard = view.findViewById(R.id.random_meal_card);
         username = view.findViewById(R.id.username);
+        login = view.findViewById(R.id.login);
         randomMealImage = view.findViewById(R.id.random_meal_image);
         randomMealTitle = view.findViewById(R.id.random_meal_title);
         swipeRefreshLayout = view.findViewById(R.id.refresh_layout);
         mealsRecyclerView = view.findViewById(R.id.meals_recycler_view);
+        homeView = view.findViewById(R.id.home_view);
+        noInternetConnectionGroup = view.findViewById(R.id.no_internet_connection_group);
     }
 
     private void setupClickListener() {
@@ -112,12 +129,18 @@ public class HomeFragment extends Fragment implements HomeView, MealClickListene
                 gotoDetailsPage(randomMealId);
             }
         });
+
+        login.setOnClickListener(v -> {
+            startActivity(new Intent(getContext(), AuthenticationActivity.class));
+        });
     }
 
     private void gotoDetailsPage(String id) {
-        HomeFragmentDirections.ActionHomeFragmentToRecipeDetailsFragment action = HomeFragmentDirections
-                .actionHomeFragmentToRecipeDetailsFragment(id);
-        Navigation.findNavController(this.getView()).navigate(action);
+        if (this.getView() != null) {
+            HomeFragmentDirections.ActionHomeFragmentToRecipeDetailsFragment action = HomeFragmentDirections
+                    .actionHomeFragmentToRecipeDetailsFragment(id);
+            Navigation.findNavController(this.getView()).navigate(action);
+        }
     }
 
     private void displayRandomMeal(MealsItem meal) {
@@ -146,7 +169,19 @@ public class HomeFragment extends Fragment implements HomeView, MealClickListene
     }
 
     @Override
+    public void registeredUser(String username) {
+        this.username.setText(username);
+        this.login.setVisibility(GONE);
+    }
+
+    @Override
+    public void userNotLoggedIn() {
+        //user not logged in
+    }
+
+    @Override
     public void allMealsResultSuccess(MealsList meal) {
+        hideNoInternetConnectionMessage();
         swipeRefreshLayout.setRefreshing(false);
 
         adapter.setMealsList(meal);
@@ -157,8 +192,18 @@ public class HomeFragment extends Fragment implements HomeView, MealClickListene
 
     @Override
     public void allMealsResultFail(String errorMessage) {
-        Snackbar.make(mealCard, R.string.you_are_not_connected, Snackbar.LENGTH_SHORT).show();
         swipeRefreshLayout.setRefreshing(false);
+        showNoInternetConnectionMessage();
+    }
+
+    private void showNoInternetConnectionMessage() {
+        homeView.setVisibility(GONE);
+        noInternetConnectionGroup.setVisibility(VISIBLE);
+    }
+
+    private void hideNoInternetConnectionMessage() {
+        homeView.setVisibility(VISIBLE);
+        noInternetConnectionGroup.setVisibility(GONE);
     }
 
     @Override

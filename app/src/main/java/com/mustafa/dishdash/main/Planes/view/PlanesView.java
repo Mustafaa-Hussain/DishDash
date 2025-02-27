@@ -15,4 +15,5 @@ public interface PlanesView {
     void onUserNotLoggedIn();
 
     void onSyncSuccess();
+    void userNotLoggedIn();
 }

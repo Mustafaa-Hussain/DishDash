@@ -1,4 +1,4 @@
-package com.mustafa.dishdash.main.favorites.view;
+package com.mustafa.dishdash.main.favorites.view.adapter;
 
 import com.mustafa.dishdash.main.data_layer.pojo.random_meal.MealsItem;
 

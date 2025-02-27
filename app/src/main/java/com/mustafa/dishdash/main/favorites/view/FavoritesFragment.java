@@ -1,6 +1,7 @@
 package com.mustafa.dishdash.main.favorites.view;
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -12,20 +13,26 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.mustafa.dishdash.R;
+import com.mustafa.dishdash.auth.AuthenticationActivity;
 import com.mustafa.dishdash.main.data_layer.FavoriteMealsRepository;
 import com.mustafa.dishdash.main.data_layer.db.favorites.FavoritesMealsLocalDatasource;
 import com.mustafa.dishdash.main.data_layer.firebase.favorite_meals.FavoritesRemoteDatasource;
 import com.mustafa.dishdash.main.data_layer.pojo.random_meal.MealsItem;
 import com.mustafa.dishdash.main.favorites.presenter.FavoritesPresenter;
+import com.mustafa.dishdash.main.favorites.view.adapter.FavoriteItemClickListener;
+import com.mustafa.dishdash.main.favorites.view.adapter.FavoritesAdapter;
 
 import java.util.List;
 
 
 public class FavoritesFragment extends Fragment implements FavoriteItemClickListener, FavoritesView {
     private RecyclerView favoritesRecyclerView;
+    private View notLoggedInGroup;
+    private TextView login;
     private FavoritesAdapter adapter;
     private FavoritesPresenter presenter;
 
@@ -47,16 +54,27 @@ public class FavoritesFragment extends Fragment implements FavoriteItemClickList
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        favoritesRecyclerView = view.findViewById(R.id.favorite_meals_recycler_view);
+        notLoggedInGroup = view.findViewById(R.id.not_logged_in_group);
+        login = view.findViewById(R.id.login);
+
+        login.setOnClickListener(v -> {
+            startActivity(new Intent(getContext(), AuthenticationActivity.class));
+        });
+
 
         presenter = new FavoritesPresenter(this,
                 FavoriteMealsRepository.getInstance(new FavoritesMealsLocalDatasource(getContext())
                         , new FavoritesRemoteDatasource()));
 
-        favoritesRecyclerView = view.findViewById(R.id.favorite_meals_recycler_view);
         adapter = new FavoritesAdapter(getContext(), this);
         favoritesRecyclerView.setAdapter(adapter);
+    }
 
+    @Override
+    public void onResume() {
         presenter.getAllFavoriteMeals();
+        super.onResume();
     }
 
     @Override
@@ -67,6 +85,7 @@ public class FavoritesFragment extends Fragment implements FavoriteItemClickList
 
     @Override
     public void allFavoriteMeals(List<MealsItem> mealsList) {
+        notLoggedInGroup.setVisibility(View.GONE);
         adapter.setMealsList(mealsList);
     }
 
@@ -91,8 +110,7 @@ public class FavoritesFragment extends Fragment implements FavoriteItemClickList
 
     @Override
     public void userNotLoggedIn() {
-        if (getContext() != null)
-            Toast.makeText(getContext(), R.string.you_are_not_logged_in, Toast.LENGTH_SHORT).show();
+        notLoggedInGroup.setVisibility(View.VISIBLE);
     }
 
     @Override

@@ -51,8 +51,7 @@ public class RecipeDetailsPresenter implements UploadRemoteFavoriteMealsCallBack
 
     @SuppressLint("CheckResult")
     public void addMealToFavorites(MealsItem meal) {
-        String userEmail = authRepository.getCurrentAuthenticatedUserEmail();
-        if (userEmail != null) {
+        if (authRepository.isAuthenticated()) {
             compositeDisposable.add(
                     favoriteMealsRepository.insertFavoriteMeal(meal)
                             .subscribe(() -> {
@@ -97,15 +96,19 @@ public class RecipeDetailsPresenter implements UploadRemoteFavoriteMealsCallBack
     }
 
     public void addMealToFuturePlane(MealsItem meal, int day, int month, int year) {
-        FuturePlane futurePlane = new FuturePlane(meal, day, month, year);
-        compositeDisposable.add(
-                futurePlanesRepository
-                        .insertFuturePlane(futurePlane)
-                        .subscribe(() -> {
-                                    view.onAddedToFuturePlanesSuccess();
-                                    syncFutureData();
-                                },
-                                error -> view.onAddedToFuturePlanesFail()));
+        if (authRepository.isAuthenticated()) {
+            FuturePlane futurePlane = new FuturePlane(meal, day, month, year);
+            compositeDisposable.add(
+                    futurePlanesRepository
+                            .insertFuturePlane(futurePlane)
+                            .subscribe(() -> {
+                                        view.onAddedToFuturePlanesSuccess();
+                                        syncFutureData();
+                                    },
+                                    error -> view.onAddedToFuturePlanesFail()));
+        } else {
+            view.userNotLoggedIn();
+        }
     }
 
     private void syncFutureData() {

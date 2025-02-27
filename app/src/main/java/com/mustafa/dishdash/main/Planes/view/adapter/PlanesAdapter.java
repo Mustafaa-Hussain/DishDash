@@ -1,4 +1,4 @@
-package com.mustafa.dishdash.main.Planes.view;
+package com.mustafa.dishdash.main.Planes.view.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
