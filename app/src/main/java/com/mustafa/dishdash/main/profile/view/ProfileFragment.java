@@ -56,11 +56,6 @@ public class ProfileFragment extends Fragment implements ProfileView {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        TextView textView = view.findViewById(R.id.profile);
-        textView.setOnClickListener(v -> {
-            Intent intent = new Intent(this.getActivity(), AuthenticationActivity.class);
-            startActivity(intent);
-        });
         setupUI(view);
 
         presenter = new ProfilePresenter(

@@ -32,8 +32,19 @@ public class PlanesPresenter implements UploadFuturePlanesCallBack {
             compositeDisposable.add(
                     futurePlanesRepository
                             .getAllFuturePlanes()
-                            .subscribe(futurePlanes ->
-                                            view.onGetAllFuturePlanesSuccess(futurePlanes),
+                            .subscribe(futurePlanes -> {
+                                        futurePlanes.sort((fp1, fp2) -> {
+                                                    if (!fp1.getYear().equals(fp2.getYear())) {
+                                                        return fp1.getYear() - fp2.getYear();
+                                                    }
+                                                    if (!fp1.getMonth().equals(fp2.getMonth())) {
+                                                        return fp1.getMonth() - fp2.getMonth();
+                                                    }
+                                                    return fp1.getDay() - fp2.getDay();
+                                                }
+                                        );
+                                        view.onGetAllFuturePlanesSuccess(futurePlanes);
+                                    },
                                     error -> view.onGetAllFuturePlanesFail(error.getMessage())));
         } else {
             view.userNotLoggedIn();
