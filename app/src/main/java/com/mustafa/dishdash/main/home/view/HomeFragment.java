@@ -45,6 +45,7 @@ public class HomeFragment extends Fragment implements HomeView, MealClickListene
 
     private CardView mealCard;
     private TextView username;
+    private TextView retry;
     private TextView login;
     private ImageView randomMealImage;
     private TextView randomMealTitle;
@@ -111,6 +112,7 @@ public class HomeFragment extends Fragment implements HomeView, MealClickListene
     }
 
     private void setupUI(View view) {
+        retry = view.findViewById(R.id.retry);
         mealCard = view.findViewById(R.id.random_meal_card);
         username = view.findViewById(R.id.username);
         login = view.findViewById(R.id.login);
@@ -132,6 +134,12 @@ public class HomeFragment extends Fragment implements HomeView, MealClickListene
 
         login.setOnClickListener(v -> {
             startActivity(new Intent(getContext(), AuthenticationActivity.class));
+        });
+
+        retry.setOnClickListener(v -> {
+            presenter.getRandomMeal();
+            presenter.getAllMeals();
+            presenter.getRegisteredUser();
         });
     }
 
@@ -164,7 +172,6 @@ public class HomeFragment extends Fragment implements HomeView, MealClickListene
 
     @Override
     public void randomMealResultFail(String errorMessage) {
-        Snackbar.make(mealCard, R.string.you_are_not_connected, Snackbar.LENGTH_SHORT).show();
         swipeRefreshLayout.setRefreshing(false);
     }
 
@@ -215,7 +222,6 @@ public class HomeFragment extends Fragment implements HomeView, MealClickListene
 
     @Override
     public void mealByIdResultFail(String errorMessage) {
-        Snackbar.make(mealCard, R.string.you_are_not_connected, Snackbar.LENGTH_SHORT).show();
         swipeRefreshLayout.setRefreshing(false);
     }
 

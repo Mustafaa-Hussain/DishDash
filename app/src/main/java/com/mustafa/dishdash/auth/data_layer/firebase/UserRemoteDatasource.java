@@ -30,7 +30,6 @@ public class UserRemoteDatasource {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             callback.onAuthSuccess(auth.getCurrentUser());
-
                         } else {
                             callback.onAuthFailed(task.getException().getMessage());
                         }

@@ -62,4 +62,10 @@
     <string name="already_exists_in_this_day">Already Exists in this day!</string>
     <string name="planes">Planes</string>
     <string name="yes">Yes</string>
+    <string name="country">Country</string>
+    <string name="category">Category</string>
+    <string name="name">Name</string>
+    <string name="retry">Retry</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

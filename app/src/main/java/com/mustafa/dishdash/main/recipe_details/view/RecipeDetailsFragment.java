@@ -3,7 +3,7 @@ package com.mustafa.dishdash.main.recipe_details.view;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static android.widget.Toast.LENGTH_SHORT;
-import static com.mustafa.dishdash.utils.Constants.ingredientImageUrl;
+import static com.mustafa.dishdash.utils.Constants.INGREDIENT_IMAGE_URL;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
@@ -21,7 +21,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -30,7 +29,6 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
-import com.google.android.material.snackbar.Snackbar;
 import com.mustafa.dishdash.R;
 import com.mustafa.dishdash.auth.AuthenticationActivity;
 import com.mustafa.dishdash.auth.data_layer.AuthRepository;
@@ -307,7 +305,7 @@ public class RecipeDetailsFragment extends Fragment implements RecipeDetailsView
             ingTitle.setText(ingredientTitle);
             ingMeasurement.setText(ingredientMeasurement);
 
-            loadAndPlaceImage(ingredientImageUrl + ingredientTitle + Constants.SMALL_IMAGE_EXTENSION, ingImage);
+            loadAndPlaceImage(INGREDIENT_IMAGE_URL + ingredientTitle + Constants.SMALL_IMAGE_EXTENSION, ingImage);
 
             linearLayout.addView(child);
         }

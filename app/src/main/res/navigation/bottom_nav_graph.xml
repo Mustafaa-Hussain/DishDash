@@ -56,4 +56,9 @@
             android:name="id"
             app:argType="string" />
     </fragment>
+    <fragment
+        android:id="@+id/mealsFragment"
+        android:name="com.mustafa.dishdash.MealsFragment"
+        android:label="fragment_meals"
+        tools:layout="@layout/fragment_meals" />
 </navigation>
