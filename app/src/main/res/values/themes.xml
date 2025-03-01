@@ -1,0 +1,40 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="Base.Theme.DishDash" parent="Theme.Material3.Light.NoActionBar" />
+
+    <style name="rounded_image_corner">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
+    </style>
+
+    <style name="search_view_style" parent="">
+        <item name="android:editTextColor">@color/on_primary</item>
+    </style>
+
+    <style name="DialogTheme" parent="Theme.Material3.Light.Dialog">
+        <item name="colorAccent">@color/primary</item>
+    </style>
+
+    <style name="circular_image">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <style name="text_title">
+        <item name="fontFamily">@font/andika_new_basic</item>
+        <item name="fontStyle">normal</item>
+        <item name="android:textSize">22sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="sub_title">
+        <item name="fontFamily">@font/andika_new_basic</item>
+        <item name="fontStyle">normal</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
+    <style name="Theme.DishDash" parent="Base.Theme.DishDash" />
+
+    <color name="blue">#0000CE</color>
+</resources>
