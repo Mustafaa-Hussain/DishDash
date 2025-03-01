@@ -50,10 +50,7 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.TimeZone;
 
 public class RecipeDetailsFragment extends Fragment implements RecipeDetailsView {
 
@@ -143,9 +140,8 @@ public class RecipeDetailsFragment extends Fragment implements RecipeDetailsView
 
         });
         login.setOnClickListener(view -> {
-            startActivity(new Intent(getContext(), AuthenticationActivity.class));
-
             notLoggedInBanner.setVisibility(GONE);
+            startActivity(new Intent(getContext(), AuthenticationActivity.class));
         });
     }
 
@@ -212,9 +208,11 @@ public class RecipeDetailsFragment extends Fragment implements RecipeDetailsView
     }
 
     @Override
-    public void onAddedToFuturePlanesSuccess() {
-        if (getContext() != null)
+    public void onAddedToFuturePlanesSuccess(MealsItem meal, int day, int month, int year) {
+        if (getContext() != null) {
+            saveInPhoneCalender(meal, day, month, year);
             Toast.makeText(getContext(), R.string.added_to_future_planes, LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -229,7 +227,6 @@ public class RecipeDetailsFragment extends Fragment implements RecipeDetailsView
         //banner
         notLoggedInBanner.setAnimation(openBanner);
         notLoggedInBanner.setVisibility(VISIBLE);
-        Toast.makeText(getContext(), getString(R.string.you_are_not_logged_in), LENGTH_SHORT).show();
     }
 
 
@@ -254,10 +251,8 @@ public class RecipeDetailsFragment extends Fragment implements RecipeDetailsView
         addToCalender.setOnClickListener(view -> {
             DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(),
                     R.style.DialogTheme,
-                    (datePicker, year1, month_index, day1) -> {
-                        presenter.addMealToFuturePlane(mealItem, day1, month_index + 1, year1);
-                        saveInPhoneCalender(mealItem, day1, month_index, year1);
-                    },
+                    (datePicker, year1, month_index, day1) ->
+                            presenter.addMealToFuturePlane(mealItem, day1, month_index + 1, year1),
                     year, month, day);
 
             datePickerDialog.getDatePicker().setMinDate(calendar.getTimeInMillis());

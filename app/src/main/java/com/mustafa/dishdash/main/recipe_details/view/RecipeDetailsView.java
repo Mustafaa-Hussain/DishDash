@@ -22,6 +22,6 @@ public interface RecipeDetailsView {
 
     void onSyncDataFailed();
 
-    void onAddedToFuturePlanesSuccess();
+    void onAddedToFuturePlanesSuccess(MealsItem meal, int day, int month, int year);
     void onAddedToFuturePlanesFail();
 }

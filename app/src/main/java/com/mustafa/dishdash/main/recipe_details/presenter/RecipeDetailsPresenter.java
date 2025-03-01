@@ -102,7 +102,7 @@ public class RecipeDetailsPresenter implements UploadRemoteFavoriteMealsCallBack
                     futurePlanesRepository
                             .insertFuturePlane(futurePlane)
                             .subscribe(() -> {
-                                        view.onAddedToFuturePlanesSuccess();
+                                        view.onAddedToFuturePlanesSuccess(meal, day, month-1, year);
                                         syncFutureData();
                                     },
                                     error -> view.onAddedToFuturePlanesFail()));
