@@ -100,9 +100,7 @@ public class SearchFragment extends Fragment implements ItemClickListener, Searc
 
                     @Override
                     public boolean onQueryTextChange(String s) {
-                        Log.i("TAG", "Data: " + s);
-                        if (!s.isEmpty())
-                            emitter.onNext(s.trim());
+                        emitter.onNext(s.trim());
                         return false;
                     }
                 }));
