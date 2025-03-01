@@ -6,7 +6,6 @@ import static com.mustafa.dishdash.utils.Constants.SMALL_IMAGE_EXTENSION;
 import android.annotation.SuppressLint;
 
 import com.mustafa.dishdash.main.search.data_layer.SearchRepository;
-import com.mustafa.dishdash.main.search.data_layer.models.filter_by_name.FilterByNameResponse;
 import com.mustafa.dishdash.main.search.view.SearchFragmentView;
 import com.mustafa.dishdash.main.search.view.adapter.SearchItem;
 import com.mustafa.dishdash.utils.CountryNameConverter;
@@ -20,16 +19,16 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class SearchPresenter {
     private SearchFragmentView view;
-    private SearchRepository repository;
+    private SearchRepository searchRepository;
 
     public SearchPresenter(SearchFragmentView view, SearchRepository repository) {
         this.view = view;
-        this.repository = repository;
+        this.searchRepository = repository;
     }
 
     @SuppressLint("CheckResult")
     public void getCategories() {
-        repository.getCategories()
+        searchRepository.getCategories()
                 .flatMapObservable(categoryResponse ->
                         Observable.fromIterable(categoryResponse.getCategories()))
                 .map(categoriesItem ->
@@ -43,7 +42,7 @@ public class SearchPresenter {
 
 
     public Observable<List<SearchItem>> filterByMealName(String query) {
-        return repository.filterByMealName(query)
+        return searchRepository.filterByMealName(query)
                 .subscribeOn(Schedulers.io())
                 .flatMapObservable(filterByNameResponse ->
                         Observable
@@ -57,7 +56,7 @@ public class SearchPresenter {
 
     @SuppressLint("CheckResult")
     public void getIngredients() {
-        repository.getIngredients()
+        searchRepository.getIngredients()
                 .flatMapObservable(ingredientsResponse ->
                         Observable.fromIterable(ingredientsResponse.getMeals()))
                 .map(ingredientItem ->
@@ -71,9 +70,14 @@ public class SearchPresenter {
                         error -> view.onGetCategoriesFail(error.getMessage()));
     }
 
+    private Single<Integer> isMainIngredient(String strIngredient) {
+        return searchRepository
+                .getCountMealsOfMainIngredientByMainIngredient(strIngredient);
+    }
+
     @SuppressLint("CheckResult")
     public void getCountries() {
-        repository.getCountries()
+        searchRepository.getCountries()
                 .flatMapObservable(countriesResponse ->
                         Observable.fromIterable(countriesResponse.getMeals()))
                 .map(mealsItem -> new SearchItem("",

@@ -6,12 +6,11 @@ import com.mustafa.dishdash.main.search.data_layer.models.categories.CategoryRes
 import com.mustafa.dishdash.main.search.data_layer.models.countries.CountriesResponse;
 import com.mustafa.dishdash.main.search.data_layer.models.filter_by_name.FilterByNameResponse;
 import com.mustafa.dishdash.main.search.data_layer.models.ingredients.IngredientsResponse;
-import com.mustafa.dishdash.main.search.view.adapter.SearchItem;
+import com.mustafa.dishdash.main.search.data_layer.models.ingredients.MealsItem;
 
 import java.util.List;
 
 import hu.akarnokd.rxjava3.retrofit.RxJava3CallAdapterFactory;
-import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.core.Single;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -42,5 +41,10 @@ public class SearchRemoteDataSource {
 
     public Single<FilterByNameResponse> filterByMealName(String query) {
         return apiSearchService.filterByMealName(query);
+    }
+
+    public Single<List<MealsItem>> filterByMainIngredients(String strIngredient) {
+        return apiSearchService
+                .filterByMainIngredients(strIngredient);
     }
 }

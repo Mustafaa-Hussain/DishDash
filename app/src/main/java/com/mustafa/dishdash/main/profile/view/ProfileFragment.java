@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -36,6 +37,8 @@ public class ProfileFragment extends Fragment implements ProfileView {
 
     private View notLoggedInGroup;
     private TextView login;
+    private TextView username, email;
+    private ImageView userImage;
     private ProfilePresenter presenter;
 
     public ProfileFragment() {
@@ -92,6 +95,8 @@ public class ProfileFragment extends Fragment implements ProfileView {
             showUserNotLoggedIn();
         } else {
             hideUserNotLoggedIn();
+            username.setText(presenter.getUsername());
+            email.setText(presenter.getEmail());
         }
         super.onResume();
     }
@@ -100,12 +105,18 @@ public class ProfileFragment extends Fragment implements ProfileView {
         notLoggedInGroup.setVisibility(VISIBLE);
         //hide other component
         btnSignOut.setVisibility(GONE);
+        username.setVisibility(GONE);
+        email.setVisibility(GONE);
+        userImage.setVisibility(GONE);
     }
 
     private void hideUserNotLoggedIn() {
         notLoggedInGroup.setVisibility(GONE);
 
-        btnSignOut.setVisibility(VISIBLE);
+        btnSignOut.setVisibility(VISIBLE);;
+        username.setVisibility(VISIBLE);
+        email.setVisibility(VISIBLE);
+        userImage.setVisibility(VISIBLE);
     }
 
     @Override
@@ -118,6 +129,8 @@ public class ProfileFragment extends Fragment implements ProfileView {
         btnSignOut = view.findViewById(R.id.sign_out);
         notLoggedInGroup = view.findViewById(R.id.not_logged_in_group);
         login = view.findViewById(R.id.login);
-
+        username = view.findViewById(R.id.txtUsername);
+        email = view.findViewById(R.id.txtEmail);
+        userImage = view.findViewById(R.id.user_image);
     }
 }

@@ -4,7 +4,7 @@
     <string name="welcome_message">What are you cooking today</string>
     <string name="add_to_favorites">add to favorites</string>
     <string name="add_to_calender">add to calender</string>
-    <string name="guest">[ Guest ]</string>
+    <string name="guest">Guest.</string>
     <string name="meal_of_the_day">Meal of the Day</string>
     <string name="home">Home</string>
     <string name="search">Search</string>
@@ -68,4 +68,8 @@
     <string name="retry">Retry</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="meals">Meals</string>
+    <string name="hello">Hello,</string>
+    <string name="ok">Ok</string>
+    <string name="no_meal_with_this_name">No meal with this name.</string>
 </resources>

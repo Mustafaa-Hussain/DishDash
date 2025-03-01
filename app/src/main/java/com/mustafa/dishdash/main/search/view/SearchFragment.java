@@ -1,11 +1,13 @@
 package com.mustafa.dishdash.main.search.view;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.text.Editable;
@@ -15,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,7 +41,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 public class SearchFragment extends Fragment implements ItemClickListener, SearchFragmentView {
 
     private View noInternetConnectionMessage;
-    private EditText searchBar;
+    private SearchView searchBar;
     private TextView retry;
     private ChipGroup chipFilterGroup;
     private RecyclerView searchRecyclerView;
@@ -61,7 +64,7 @@ public class SearchFragment extends Fragment implements ItemClickListener, Searc
         return inflater.inflate(R.layout.fragment_search, container, false);
     }
 
-    @SuppressLint("CheckResult")
+    @SuppressLint({"CheckResult", "NonConstantResourceId"})
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -75,6 +78,9 @@ public class SearchFragment extends Fragment implements ItemClickListener, Searc
         searchRecyclerView.setAdapter(adapter);
 
         chipFilterGroup.setOnCheckedStateChangeListener((group, checkedIds) -> {
+            adapter.setSearchItemList(null);
+            searchBar.clearFocus();
+            searchBar.setQuery("", false);
             switch (group.getCheckedChipId()) {
                 case R.id.category_chip:
                     presenter.getCategories();
@@ -86,31 +92,24 @@ public class SearchFragment extends Fragment implements ItemClickListener, Searc
                     presenter.getIngredients();
                     break;
                 default:
-                    adapter.setSearchItemList(null);
                     searchItemList = null;
             }
-            searchBar.setText("");
         });
 
-
         searchObservable = Observable.create(emitter ->
-                searchBar.addTextChangedListener(new TextWatcher() {
+                searchBar.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                     @Override
-                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
+                    public boolean onQueryTextSubmit(String s) {
+                        return false;
                     }
 
                     @Override
-                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                        emitter.onNext(charSequence.toString().trim());
+                    public boolean onQueryTextChange(String s) {
+                        emitter.onNext(s.trim());
+                        return false;
                     }
+                }));
 
-                    @Override
-                    public void afterTextChanged(Editable editable) {
-
-                    }
-                })
-        );
         subscribeForChanges();
     }
 
@@ -144,7 +143,21 @@ public class SearchFragment extends Fragment implements ItemClickListener, Searc
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(searchResult ->
                                 adapter.setSearchItemList(searchResult)
-                        , error -> showNoInternetConnection());
+                        , error -> showNoItemsWithThisName());
+    }
+
+    private void showNoItemsWithThisName() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage(R.string.no_meal_with_this_name)
+                .setPositiveButton(R.string.ok, (dialogInterface, i) -> {
+                    subscribeForChanges();
+                    searchBar.setQuery("", false);
+                })
+                .setOnCancelListener(dialogInterface -> {
+                    subscribeForChanges();
+                    searchBar.setQuery("", false);
+                });
+        builder.create().show();
     }
 
     private void showNoInternetConnection() {
@@ -180,8 +193,33 @@ public class SearchFragment extends Fragment implements ItemClickListener, Searc
         showNoInternetConnection();
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public void onItemClickListener(String id, String title) {
-        Toast.makeText(getContext(), title + ", id: " + id, Toast.LENGTH_SHORT).show();
+        switch (chipFilterGroup.getCheckedChipId()) {
+            case R.id.category_chip:
+                Navigation.findNavController(this.getView()).navigate(
+                        SearchFragmentDirections.
+                                actionSearchFragmentToMealsFragment("c", title)
+                );
+                break;
+            case R.id.country_chip:
+                Navigation.findNavController(this.getView()).navigate(
+                        SearchFragmentDirections.
+                                actionSearchFragmentToMealsFragment("a", title)
+                );
+                break;
+            case R.id.ingredients_chip:
+                Navigation.findNavController(this.getView()).navigate(
+                        SearchFragmentDirections.
+                                actionSearchFragmentToMealsFragment("i", title)
+                );
+                break;
+            default:
+                Navigation.findNavController(this.getView()).navigate(
+                        SearchFragmentDirections.
+                                actionSearchFragmentToRecipeDetailsFragment(id));
+
+        }
     }
 }

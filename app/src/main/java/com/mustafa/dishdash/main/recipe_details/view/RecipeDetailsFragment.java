@@ -16,6 +16,7 @@ import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import android.provider.CalendarContract;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,7 +50,10 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
 
 public class RecipeDetailsFragment extends Fragment implements RecipeDetailsView {
 
@@ -250,9 +254,12 @@ public class RecipeDetailsFragment extends Fragment implements RecipeDetailsView
         addToCalender.setOnClickListener(view -> {
             DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(),
                     R.style.DialogTheme,
-                    (datePicker, year1, month_index, day1) ->
-                            presenter.addMealToFuturePlane(mealItem, day1, month_index + 1, year1),
+                    (datePicker, year1, month_index, day1) -> {
+                        presenter.addMealToFuturePlane(mealItem, day1, month_index + 1, year1);
+                        saveInPhoneCalender(mealItem, day1, month_index, year1);
+                    },
                     year, month, day);
+
             datePickerDialog.getDatePicker().setMinDate(calendar.getTimeInMillis());
             datePickerDialog.getDatePicker().setMaxDate(calendar.getTimeInMillis() + WEEK);
 
@@ -293,6 +300,20 @@ public class RecipeDetailsFragment extends Fragment implements RecipeDetailsView
             youTubePlayerView.setVisibility(GONE);
         }
 
+    }
+
+    private void saveInPhoneCalender(MealsItem mealItem, int day, int month, int year) {
+        Calendar beginTime = Calendar.getInstance();
+        beginTime.set(year, month, day);
+
+
+        Intent intent = new Intent(Intent.ACTION_INSERT)
+                .setData(CalendarContract.Events.CONTENT_URI);
+
+        intent.putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, beginTime.getTimeInMillis());
+        intent.putExtra(CalendarContract.Events.TITLE, getString(R.string.app_name) + ": " + mealItem.getStrMeal());
+        intent.putExtra(CalendarContract.Events.ALL_DAY, true);
+        startActivity(intent);
     }
 
     private void addIngredient(String ingredientTitle, String ingredientMeasurement) {

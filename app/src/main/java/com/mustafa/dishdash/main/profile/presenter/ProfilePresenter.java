@@ -46,6 +46,14 @@ public class ProfilePresenter {
         return authRepository.isAuthenticated();
     }
 
+    public String getUsername(){
+        return authRepository.getCurrentAuthenticatedUsername();
+    }
+
+    public String getEmail(){
+        return authRepository.getCurrentAuthenticatedUserEmail();
+    }
+
     public void close() {
         compositeDisposable.clear();
     }

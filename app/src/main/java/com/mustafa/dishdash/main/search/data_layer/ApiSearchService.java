@@ -5,6 +5,7 @@ import com.mustafa.dishdash.main.search.data_layer.models.categories.CategoryRes
 import com.mustafa.dishdash.main.search.data_layer.models.countries.CountriesResponse;
 import com.mustafa.dishdash.main.search.data_layer.models.filter_by_name.FilterByNameResponse;
 import com.mustafa.dishdash.main.search.data_layer.models.ingredients.IngredientsResponse;
+import com.mustafa.dishdash.main.search.data_layer.models.ingredients.MealsItem;
 import com.mustafa.dishdash.main.search.view.adapter.SearchItem;
 
 import java.util.List;
@@ -26,4 +27,6 @@ public interface ApiSearchService {
 
     @GET("search.php")
     Single<FilterByNameResponse> filterByMealName(@Query("s") String query);
+
+    Single<List<MealsItem>> filterByMainIngredients(String strIngredient);
 }
