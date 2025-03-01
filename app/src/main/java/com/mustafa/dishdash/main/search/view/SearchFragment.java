@@ -6,20 +6,16 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.SearchView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.material.chip.ChipGroup;
 import com.mustafa.dishdash.R;
@@ -64,7 +60,6 @@ public class SearchFragment extends Fragment implements ItemClickListener, Searc
         return inflater.inflate(R.layout.fragment_search, container, false);
     }
 
-    @SuppressLint({"CheckResult", "NonConstantResourceId"})
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -91,7 +86,7 @@ public class SearchFragment extends Fragment implements ItemClickListener, Searc
                 case R.id.ingredients_chip:
                     presenter.getIngredients();
                     break;
-                default:
+                case R.id.name_chip:
                     searchItemList = null;
             }
         });
@@ -105,7 +100,9 @@ public class SearchFragment extends Fragment implements ItemClickListener, Searc
 
                     @Override
                     public boolean onQueryTextChange(String s) {
-                        emitter.onNext(s.trim());
+                        Log.i("TAG", "Data: " + s);
+                        if (!s.isEmpty())
+                            emitter.onNext(s.trim());
                         return false;
                     }
                 }));
@@ -121,7 +118,6 @@ public class SearchFragment extends Fragment implements ItemClickListener, Searc
 
     @SuppressLint("CheckResult")
     private void subscribeForChanges() {
-        hideNoInternetConnection();
         searchObservable
                 .subscribeOn(Schedulers.io())
                 .debounce(300, TimeUnit.MILLISECONDS)
@@ -144,6 +140,8 @@ public class SearchFragment extends Fragment implements ItemClickListener, Searc
                 .subscribe(searchResult ->
                                 adapter.setSearchItemList(searchResult)
                         , error -> showNoItemsWithThisName());
+
+        hideNoInternetConnection();
     }
 
     private void showNoItemsWithThisName() {
