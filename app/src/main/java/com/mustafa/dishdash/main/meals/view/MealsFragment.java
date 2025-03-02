@@ -14,9 +14,14 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.mustafa.dishdash.R;
-import com.mustafa.dishdash.main.meals.data_layer.MealRemoteDataSource;
-import com.mustafa.dishdash.main.meals.data_layer.MealsRepository;
-import com.mustafa.dishdash.main.meals.data_layer.model.MealsItem;
+import com.mustafa.dishdash.main.data_layer.MealsRepository;
+import com.mustafa.dishdash.main.data_layer.db.favorites.FavoritesMealsLocalDatasource;
+import com.mustafa.dishdash.main.data_layer.db.future_planes.FuturePlanesLocalDatasource;
+import com.mustafa.dishdash.main.data_layer.firebase.favorite_meals.FavoritesRemoteDatasource;
+import com.mustafa.dishdash.main.data_layer.firebase.future_plane.FuturePlanesRemoteDatasource;
+import com.mustafa.dishdash.main.data_layer.network.MealsRemoteDatasource;
+import com.mustafa.dishdash.main.data_layer.pojo.search.MealsItem;
+import com.mustafa.dishdash.main.data_layer.shared_prefs.TodayMealLocalDatasource;
 import com.mustafa.dishdash.main.meals.presenter.MealsPresenter;
 import com.mustafa.dishdash.main.meals.view.adapter.ItemClickListener;
 import com.mustafa.dishdash.main.meals.view.adapter.MealsAdapter;
@@ -53,7 +58,12 @@ public class MealsFragment extends Fragment implements ItemClickListener, MealsV
         mealsRecyclerView.setAdapter(adapter);
 
         MealsPresenter presenter = new MealsPresenter(
-                MealsRepository.getInstance(new MealRemoteDataSource()),
+                MealsRepository.getInstance(new MealsRemoteDatasource(),
+                        new TodayMealLocalDatasource(getContext()),
+                        new FavoritesMealsLocalDatasource(getContext()),
+                        new FavoritesRemoteDatasource(),
+                        new FuturePlanesRemoteDatasource(),
+                        new FuturePlanesLocalDatasource(getContext())),
                 this);
 
         presenter.getData(filterType, query);

@@ -1,4 +1,4 @@
-package com.mustafa.dishdash.main.search.data_layer.models.filter_by_ingredients;
+package com.mustafa.dishdash.main.data_layer.pojo.search.filter_by_ingredients;
 
 public class MealsItem{
 	private String strMealThumb;

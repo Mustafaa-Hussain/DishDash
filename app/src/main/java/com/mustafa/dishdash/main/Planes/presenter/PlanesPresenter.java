@@ -2,7 +2,7 @@ package com.mustafa.dishdash.main.Planes.presenter;
 
 import com.mustafa.dishdash.auth.data_layer.AuthRepository;
 import com.mustafa.dishdash.main.Planes.view.PlanesView;
-import com.mustafa.dishdash.main.data_layer.FuturePlanesRepository;
+import com.mustafa.dishdash.main.data_layer.MealsRepository;
 import com.mustafa.dishdash.main.data_layer.db.future_planes.entites.FuturePlane;
 import com.mustafa.dishdash.main.data_layer.firebase.future_plane.entities.FuturePlaneEntity;
 import com.mustafa.dishdash.main.data_layer.firebase.future_plane.UploadFuturePlanesCallBack;
@@ -14,14 +14,14 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable;
 
 public class PlanesPresenter implements UploadFuturePlanesCallBack {
     private CompositeDisposable compositeDisposable;
-    private FuturePlanesRepository futurePlanesRepository;
+    private MealsRepository mealsRepository;
     private AuthRepository authRepository;
     private PlanesView view;
 
-    public PlanesPresenter(FuturePlanesRepository futurePlanesRepository
+    public PlanesPresenter(MealsRepository mealsRepository
             , AuthRepository authRepository
             , PlanesView view) {
-        this.futurePlanesRepository = futurePlanesRepository;
+        this.mealsRepository = mealsRepository;
         this.authRepository = authRepository;
         this.view = view;
         compositeDisposable = new CompositeDisposable();
@@ -30,7 +30,7 @@ public class PlanesPresenter implements UploadFuturePlanesCallBack {
     public void getAllFuturePlanes() {
         if (authRepository.isAuthenticated()) {
             compositeDisposable.add(
-                    futurePlanesRepository
+                    mealsRepository
                             .getAllFuturePlanes()
                             .subscribe(futurePlanes -> {
                                         futurePlanes.sort((fp1, fp2) -> {
@@ -53,7 +53,7 @@ public class PlanesPresenter implements UploadFuturePlanesCallBack {
 
     public void deleteFuturePlanes(FuturePlane futurePlane) {
         compositeDisposable.add(
-                futurePlanesRepository
+                mealsRepository
                         .deleteFuturePlane(futurePlane)
                         .subscribe(() -> {
                                     view.onDeleteFuturePlaneSuccess();
@@ -65,7 +65,7 @@ public class PlanesPresenter implements UploadFuturePlanesCallBack {
 
     private void syncFutureData() {
         compositeDisposable.add(
-                futurePlanesRepository
+                mealsRepository
                         .getAllFuturePlanes()
                         .flatMap(futurePlanes ->
                                 Flowable.fromIterable(futurePlanes)
@@ -76,7 +76,7 @@ public class PlanesPresenter implements UploadFuturePlanesCallBack {
                                                         futurePlane.getYear()))
                                         .collect(Collectors.toList()).toFlowable())
                         .subscribe(futurePlaneEntities -> {
-                            futurePlanesRepository
+                            mealsRepository
                                     .uploadFuturePlanes(PlanesPresenter.this, futurePlaneEntities);
                         }));
     }

@@ -1,4 +1,4 @@
-package com.mustafa.dishdash.main.search.data_layer.models.countries;
+package com.mustafa.dishdash.main.data_layer.pojo.search.countries;
 
 public class MealsItem{
 	private String strArea;

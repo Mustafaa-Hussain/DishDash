@@ -1,25 +1,21 @@
 package com.mustafa.dishdash.main.profile.presenter;
 
 import com.mustafa.dishdash.auth.data_layer.AuthRepository;
-import com.mustafa.dishdash.main.data_layer.FavoriteMealsRepository;
-import com.mustafa.dishdash.main.data_layer.FuturePlanesRepository;
+import com.mustafa.dishdash.main.data_layer.MealsRepository;
 import com.mustafa.dishdash.main.profile.view.ProfileView;
 
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 
 public class ProfilePresenter {
-    private FavoriteMealsRepository favoriteMealsRepository;
-    private FuturePlanesRepository futurePlanesRepository;
+    private MealsRepository mealsRepository;
     private AuthRepository authRepository;
     private ProfileView view;
     private CompositeDisposable compositeDisposable;
 
-    public ProfilePresenter(FuturePlanesRepository futurePlanesRepository
-            , FavoriteMealsRepository favoriteMealsRepository
+    public ProfilePresenter(MealsRepository mealsRepository
             , AuthRepository authRepository
             , ProfileView view) {
-        this.favoriteMealsRepository = favoriteMealsRepository;
-        this.futurePlanesRepository = futurePlanesRepository;
+        this.mealsRepository = mealsRepository;
         this.authRepository = authRepository;
         this.view = view;
         this.compositeDisposable = new CompositeDisposable();
@@ -32,12 +28,12 @@ public class ProfilePresenter {
 
     private void clearLocalData() {
         compositeDisposable.add(
-                favoriteMealsRepository
+                mealsRepository
                         .clearFavorites()
                         .subscribe());
 
         compositeDisposable.add(
-                futurePlanesRepository
+                mealsRepository
                         .clearFuturePlanes()
                         .subscribe());
     }
@@ -46,11 +42,11 @@ public class ProfilePresenter {
         return authRepository.isAuthenticated();
     }
 
-    public String getUsername(){
+    public String getUsername() {
         return authRepository.getCurrentAuthenticatedUsername();
     }
 
-    public String getEmail(){
+    public String getEmail() {
         return authRepository.getCurrentAuthenticatedUserEmail();
     }
 

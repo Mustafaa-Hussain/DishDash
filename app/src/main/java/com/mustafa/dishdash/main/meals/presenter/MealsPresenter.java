@@ -2,7 +2,7 @@ package com.mustafa.dishdash.main.meals.presenter;
 
 import android.annotation.SuppressLint;
 
-import com.mustafa.dishdash.main.meals.data_layer.MealsRepository;
+import com.mustafa.dishdash.main.data_layer.MealsRepository;
 import com.mustafa.dishdash.main.meals.view.MealsView;
 
 public class MealsPresenter {
@@ -30,7 +30,7 @@ public class MealsPresenter {
 
     @SuppressLint("CheckResult")
     public void getMealsByIngredient(String ingredient) {
-        repository.getMealsByCategory(ingredient)
+        repository.getMealsByIngredient(ingredient)
                 .subscribe(mealsResponse -> view.onMealResponseSuccess(mealsResponse.getMeals()),
                         error -> view.onMealResponseFail(error.getMessage()));
     }

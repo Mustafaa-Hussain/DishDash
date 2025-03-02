@@ -25,10 +25,14 @@ import com.mustafa.dishdash.auth.data_layer.firebase.UserRemoteDatasource;
 import com.mustafa.dishdash.main.Planes.presenter.PlanesPresenter;
 import com.mustafa.dishdash.main.Planes.view.adapter.FuturePlaneClickListener;
 import com.mustafa.dishdash.main.Planes.view.adapter.PlanesAdapter;
-import com.mustafa.dishdash.main.data_layer.FuturePlanesRepository;
+import com.mustafa.dishdash.main.data_layer.MealsRepository;
+import com.mustafa.dishdash.main.data_layer.db.favorites.FavoritesMealsLocalDatasource;
 import com.mustafa.dishdash.main.data_layer.db.future_planes.FuturePlanesLocalDatasource;
 import com.mustafa.dishdash.main.data_layer.db.future_planes.entites.FuturePlane;
+import com.mustafa.dishdash.main.data_layer.firebase.favorite_meals.FavoritesRemoteDatasource;
 import com.mustafa.dishdash.main.data_layer.firebase.future_plane.FuturePlanesRemoteDatasource;
+import com.mustafa.dishdash.main.data_layer.network.MealsRemoteDatasource;
+import com.mustafa.dishdash.main.data_layer.shared_prefs.TodayMealLocalDatasource;
 
 import java.util.List;
 
@@ -69,9 +73,13 @@ public class PlanesFragment extends Fragment implements PlanesView, FuturePlaneC
         recyclerView.setAdapter(adapter);
 
         presenter = new PlanesPresenter(
-                FuturePlanesRepository
-                        .getInstance(new FuturePlanesLocalDatasource(getContext()),
-                                new FuturePlanesRemoteDatasource()),
+                MealsRepository.getInstance(
+                        new MealsRemoteDatasource(),
+                        new TodayMealLocalDatasource(getContext()),
+                        new FavoritesMealsLocalDatasource(getContext()),
+                        new FavoritesRemoteDatasource(),
+                        new FuturePlanesRemoteDatasource(),
+                        new FuturePlanesLocalDatasource(getContext())),
                 AuthRepository.getInstance(new UserRemoteDatasource(getActivity())),
                 this);
 

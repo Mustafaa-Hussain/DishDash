@@ -1,6 +1,6 @@
 package com.mustafa.dishdash.main.meals.view;
 
-import com.mustafa.dishdash.main.meals.data_layer.model.MealsItem;
+import com.mustafa.dishdash.main.data_layer.pojo.search.MealsItem;
 
 import java.util.List;
 

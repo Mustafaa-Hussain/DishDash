@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.mustafa.dishdash.R;
-import com.mustafa.dishdash.main.meals.data_layer.model.MealsItem;
+import com.mustafa.dishdash.main.data_layer.pojo.search.MealsItem;
 
 import java.util.List;
 

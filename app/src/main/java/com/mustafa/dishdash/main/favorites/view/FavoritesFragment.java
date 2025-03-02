@@ -18,10 +18,14 @@ import android.widget.Toast;
 
 import com.mustafa.dishdash.R;
 import com.mustafa.dishdash.auth.AuthenticationActivity;
-import com.mustafa.dishdash.main.data_layer.FavoriteMealsRepository;
+import com.mustafa.dishdash.main.data_layer.MealsRepository;
 import com.mustafa.dishdash.main.data_layer.db.favorites.FavoritesMealsLocalDatasource;
+import com.mustafa.dishdash.main.data_layer.db.future_planes.FuturePlanesLocalDatasource;
 import com.mustafa.dishdash.main.data_layer.firebase.favorite_meals.FavoritesRemoteDatasource;
+import com.mustafa.dishdash.main.data_layer.firebase.future_plane.FuturePlanesRemoteDatasource;
+import com.mustafa.dishdash.main.data_layer.network.MealsRemoteDatasource;
 import com.mustafa.dishdash.main.data_layer.pojo.random_meal.MealsItem;
+import com.mustafa.dishdash.main.data_layer.shared_prefs.TodayMealLocalDatasource;
 import com.mustafa.dishdash.main.favorites.presenter.FavoritesPresenter;
 import com.mustafa.dishdash.main.favorites.view.adapter.FavoriteItemClickListener;
 import com.mustafa.dishdash.main.favorites.view.adapter.FavoritesAdapter;
@@ -62,10 +66,15 @@ public class FavoritesFragment extends Fragment implements FavoriteItemClickList
             startActivity(new Intent(getContext(), AuthenticationActivity.class));
         });
 
-
         presenter = new FavoritesPresenter(this,
-                FavoriteMealsRepository.getInstance(new FavoritesMealsLocalDatasource(getContext())
-                        , new FavoritesRemoteDatasource()));
+                MealsRepository.getInstance(
+                        new MealsRemoteDatasource(),
+                        new TodayMealLocalDatasource(getContext()),
+                        new FavoritesMealsLocalDatasource(getContext()),
+                        new FavoritesRemoteDatasource(),
+                        new FuturePlanesRemoteDatasource(),
+                        new FuturePlanesLocalDatasource(getContext())
+                ));
 
         adapter = new FavoritesAdapter(getContext(), this);
         favoritesRecyclerView.setAdapter(adapter);

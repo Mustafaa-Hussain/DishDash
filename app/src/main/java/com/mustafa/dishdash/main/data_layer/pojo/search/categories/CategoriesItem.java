@@ -1,4 +1,4 @@
-package com.mustafa.dishdash.main.search.data_layer.models.categories;
+package com.mustafa.dishdash.main.data_layer.pojo.search.categories;
 
 public class CategoriesItem{
 	private String strCategory;

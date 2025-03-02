@@ -1,4 +1,4 @@
-package com.mustafa.dishdash.main.search.data_layer.models.ingredients;
+package com.mustafa.dishdash.main.data_layer.pojo.search.ingredients;
 
 public class MealsItem{
 	private String strIngredient;

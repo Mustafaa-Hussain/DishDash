@@ -32,6 +32,9 @@ import com.mustafa.dishdash.auth.data_layer.AuthRepository;
 import com.mustafa.dishdash.auth.data_layer.firebase.UserRemoteDatasource;
 import com.mustafa.dishdash.main.data_layer.MealsRepository;
 import com.mustafa.dishdash.main.data_layer.db.favorites.FavoritesMealsLocalDatasource;
+import com.mustafa.dishdash.main.data_layer.db.future_planes.FuturePlanesLocalDatasource;
+import com.mustafa.dishdash.main.data_layer.firebase.favorite_meals.FavoritesRemoteDatasource;
+import com.mustafa.dishdash.main.data_layer.firebase.future_plane.FuturePlanesRemoteDatasource;
 import com.mustafa.dishdash.main.data_layer.network.MealsRemoteDatasource;
 import com.mustafa.dishdash.main.data_layer.shared_prefs.TodayMealLocalDatasource;
 import com.mustafa.dishdash.main.home.presenter.HomePresenter;
@@ -82,7 +85,10 @@ public class HomeFragment extends Fragment implements HomeView, MealClickListene
         presenter = new HomePresenter(this,
                 MealsRepository.getInstance(new MealsRemoteDatasource(),
                         new TodayMealLocalDatasource(getContext()),
-                        new FavoritesMealsLocalDatasource(getContext())),
+                        new FavoritesMealsLocalDatasource(getContext()),
+                        new FavoritesRemoteDatasource(),
+                        new FuturePlanesRemoteDatasource(),
+                        new FuturePlanesLocalDatasource(getContext())),
                 AuthRepository.getInstance(new UserRemoteDatasource(getActivity())));
 
         swipeRefreshLayout.setRefreshing(true);

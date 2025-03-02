@@ -13,9 +13,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
 import com.mustafa.dishdash.auth.data_layer.AuthRepository;
 import com.mustafa.dishdash.auth.data_layer.firebase.AuthNetworkCallback;
-import com.mustafa.dishdash.auth.login.presenter.LoginPresenter;
 import com.mustafa.dishdash.auth.register.view.RegisterView;
-import com.mustafa.dishdash.main.data_layer.FavoriteMealsRepository;
 import com.mustafa.dishdash.main.data_layer.MealsRepository;
 import com.mustafa.dishdash.main.data_layer.firebase.favorite_meals.GetRemoteFavoriteMealsCallBack;
 import com.mustafa.dishdash.main.data_layer.firebase.favorite_meals.UploadRemoteFavoriteMealsCallBack;
@@ -32,16 +30,13 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 public class RegisterPresenter implements AuthNetworkCallback, GetRemoteFavoriteMealsCallBack, UploadRemoteFavoriteMealsCallBack {
     private AuthRepository authRepository;
     private MealsRepository mealRepository;
-    private FavoriteMealsRepository favoriteMealsRepository;
     private CompositeDisposable compositeDisposable;
     private RegisterView view;
 
     public RegisterPresenter(
             AuthRepository authRepository
-            , FavoriteMealsRepository favoriteMealsRepository
             , MealsRepository mealsRepository, RegisterView view) {
         this.authRepository = authRepository;
-        this.favoriteMealsRepository = favoriteMealsRepository;
         this.mealRepository = mealsRepository;
         this.view = view;
         this.compositeDisposable = new CompositeDisposable();
@@ -126,7 +121,7 @@ public class RegisterPresenter implements AuthNetworkCallback, GetRemoteFavorite
     public void syncUserData() {
         //download data from remote
         //insert retrieved data into database
-        favoriteMealsRepository.getAllFavoriteMeals(this);
+        mealRepository.getAllFavoriteMeals(this);
     }
 
     @Override
@@ -139,17 +134,17 @@ public class RegisterPresenter implements AuthNetworkCallback, GetRemoteFavorite
                             .subscribeOn(Schedulers.io())
                             .flatMapSingle(mealId -> mealRepository.getMealById(mealId))
                             .flatMapCompletable(mealsItemBooleanPair ->
-                                    favoriteMealsRepository.insertFavoriteMeal(mealsItemBooleanPair.first))
+                                    mealRepository.insertFavoriteMeal(mealsItemBooleanPair.first))
                             .subscribe(() -> {
                                 compositeDisposable.add(
-                                        favoriteMealsRepository
+                                        mealRepository
                                                 .getFavoriteMeals()
                                                 .flatMap(mealsItems ->
                                                         Flowable.fromIterable(mealsItems)
                                                                 .map(mealsItem -> mealsItem.getIdMeal())
                                                                 .collect(Collectors.toList()).toFlowable())
                                                 .subscribe(mealsId -> {
-                                                    favoriteMealsRepository
+                                                    mealRepository
                                                             .uploadFavoriteMeals(RegisterPresenter.this, mealsId);
                                                 }));
                             }));

@@ -3,8 +3,6 @@ package com.mustafa.dishdash.main.recipe_details.presenter;
 import android.annotation.SuppressLint;
 
 import com.mustafa.dishdash.auth.data_layer.AuthRepository;
-import com.mustafa.dishdash.main.data_layer.FavoriteMealsRepository;
-import com.mustafa.dishdash.main.data_layer.FuturePlanesRepository;
 import com.mustafa.dishdash.main.data_layer.MealsRepository;
 import com.mustafa.dishdash.main.data_layer.db.future_planes.entites.FuturePlane;
 import com.mustafa.dishdash.main.data_layer.firebase.favorite_meals.UploadRemoteFavoriteMealsCallBack;
@@ -20,21 +18,15 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable;
 
 public class RecipeDetailsPresenter implements UploadRemoteFavoriteMealsCallBack, UploadFuturePlanesCallBack {
     private RecipeDetailsView view;
-    private MealsRepository mealsRepository;
-    private FavoriteMealsRepository favoriteMealsRepository;
-    private FuturePlanesRepository futurePlanesRepository;
+    private MealsRepository repository;
     private AuthRepository authRepository;
     private CompositeDisposable compositeDisposable;
 
     public RecipeDetailsPresenter(RecipeDetailsView view,
                                   MealsRepository mealsRepository,
-                                  FavoriteMealsRepository favoriteMealsRepository,
-                                  FuturePlanesRepository futurePlanesRepository,
                                   AuthRepository authRepository) {
         this.view = view;
-        this.mealsRepository = mealsRepository;
-        this.favoriteMealsRepository = favoriteMealsRepository;
-        this.futurePlanesRepository = futurePlanesRepository;
+        this.repository = mealsRepository;
         this.authRepository = authRepository;
         this.compositeDisposable = new CompositeDisposable();
     }
@@ -42,7 +34,7 @@ public class RecipeDetailsPresenter implements UploadRemoteFavoriteMealsCallBack
     @SuppressLint("CheckResult")
     public void getMealById(String id) {
         compositeDisposable.add(
-                mealsRepository.getMealById(id)
+                repository.getMealById(id)
                         .subscribe(
                                 mealsItemBooleanPair ->
                                         view.onGetMealDetailsSuccess(mealsItemBooleanPair.first, mealsItemBooleanPair.second),
@@ -53,7 +45,7 @@ public class RecipeDetailsPresenter implements UploadRemoteFavoriteMealsCallBack
     public void addMealToFavorites(MealsItem meal) {
         if (authRepository.isAuthenticated()) {
             compositeDisposable.add(
-                    favoriteMealsRepository.insertFavoriteMeal(meal)
+                    repository.insertFavoriteMeal(meal)
                             .subscribe(() -> {
                                         view.onAddedToFavoritesSuccess();
                                         syncFavorites();
@@ -66,14 +58,14 @@ public class RecipeDetailsPresenter implements UploadRemoteFavoriteMealsCallBack
 
     private void syncFavorites() {
         compositeDisposable.add(
-                favoriteMealsRepository
+                repository
                         .getFavoriteMeals()
                         .flatMap(mealsItems ->
                                 Flowable.fromIterable(mealsItems)
                                         .map(mealsItem -> mealsItem.getIdMeal())
                                         .collect(Collectors.toList()).toFlowable())
                         .subscribe(mealsId -> {
-                            favoriteMealsRepository
+                            repository
                                     .uploadFavoriteMeals(RecipeDetailsPresenter.this, mealsId);
                         }));
     }
@@ -83,7 +75,7 @@ public class RecipeDetailsPresenter implements UploadRemoteFavoriteMealsCallBack
         String userEmail = authRepository.getCurrentAuthenticatedUserEmail();
         if (userEmail != null) {
             compositeDisposable.add(
-                    favoriteMealsRepository
+                    repository
                             .removeFavoriteMeal(meal)
                             .subscribe(() -> {
                                         view.onRemoveFavoriteSuccess();
@@ -99,7 +91,7 @@ public class RecipeDetailsPresenter implements UploadRemoteFavoriteMealsCallBack
         if (authRepository.isAuthenticated()) {
             FuturePlane futurePlane = new FuturePlane(meal, day, month, year);
             compositeDisposable.add(
-                    futurePlanesRepository
+                    repository
                             .insertFuturePlane(futurePlane)
                             .subscribe(() -> {
                                         view.onAddedToFuturePlanesSuccess(meal, day, month-1, year);
@@ -113,7 +105,7 @@ public class RecipeDetailsPresenter implements UploadRemoteFavoriteMealsCallBack
 
     private void syncFutureData() {
         compositeDisposable.add(
-                futurePlanesRepository
+                repository
                         .getAllFuturePlanes()
                         .flatMap(futurePlanes ->
                                 Flowable.fromIterable(futurePlanes)
@@ -124,7 +116,7 @@ public class RecipeDetailsPresenter implements UploadRemoteFavoriteMealsCallBack
                                                         futurePlane.getYear()))
                                         .collect(Collectors.toList()).toFlowable())
                         .subscribe(futurePlaneEntities -> {
-                            futurePlanesRepository
+                            repository
                                     .uploadFuturePlanes(RecipeDetailsPresenter.this, futurePlaneEntities);
                         }));
     }
