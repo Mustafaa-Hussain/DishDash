@@ -30,7 +30,7 @@ public class MealsPresenter {
 
     @SuppressLint("CheckResult")
     public void getMealsByIngredient(String ingredient) {
-        repository.getMealsByCategory(ingredient)
+        repository.getMealsByIngredient(ingredient)
                 .subscribe(mealsResponse -> view.onMealResponseSuccess(mealsResponse.getMeals()),
                         error -> view.onMealResponseFail(error.getMessage()));
     }
