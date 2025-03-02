@@ -2,7 +2,7 @@ package com.mustafa.dishdash.main.meals.presenter;
 
 import android.annotation.SuppressLint;
 
-import com.mustafa.dishdash.main.meals.data_layer.MealsRepository;
+import com.mustafa.dishdash.main.data_layer.MealsRepository;
 import com.mustafa.dishdash.main.meals.view.MealsView;
 
 public class MealsPresenter {

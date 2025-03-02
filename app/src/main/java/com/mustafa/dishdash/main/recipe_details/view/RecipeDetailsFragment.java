@@ -34,8 +34,6 @@ import com.mustafa.dishdash.R;
 import com.mustafa.dishdash.auth.AuthenticationActivity;
 import com.mustafa.dishdash.auth.data_layer.AuthRepository;
 import com.mustafa.dishdash.auth.data_layer.firebase.UserRemoteDatasource;
-import com.mustafa.dishdash.main.data_layer.FavoriteMealsRepository;
-import com.mustafa.dishdash.main.data_layer.FuturePlanesRepository;
 import com.mustafa.dishdash.main.data_layer.MealsRepository;
 import com.mustafa.dishdash.main.data_layer.db.favorites.FavoritesMealsLocalDatasource;
 import com.mustafa.dishdash.main.data_layer.db.future_planes.FuturePlanesLocalDatasource;
@@ -95,11 +93,10 @@ public class RecipeDetailsFragment extends Fragment implements RecipeDetailsView
         presenter = new RecipeDetailsPresenter(this,
                 MealsRepository.getInstance(new MealsRemoteDatasource(),
                         new TodayMealLocalDatasource(getContext()),
-                        new FavoritesMealsLocalDatasource(getContext())),
-                FavoriteMealsRepository.getInstance(new FavoritesMealsLocalDatasource(getContext())
-                        , new FavoritesRemoteDatasource()),
-                FuturePlanesRepository.getInstance(new FuturePlanesLocalDatasource(getContext()),
-                        new FuturePlanesRemoteDatasource()),
+                        new FavoritesMealsLocalDatasource(getContext()),
+                        new FavoritesRemoteDatasource(),
+                        new FuturePlanesRemoteDatasource(),
+                        new FuturePlanesLocalDatasource(getContext())),
                 AuthRepository.getInstance(new UserRemoteDatasource(getActivity())));
 
 

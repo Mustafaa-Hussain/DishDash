@@ -27,10 +27,11 @@ import com.mustafa.dishdash.R;
 import com.mustafa.dishdash.auth.data_layer.AuthRepository;
 import com.mustafa.dishdash.auth.data_layer.firebase.UserRemoteDatasource;
 import com.mustafa.dishdash.auth.register.presenter.RegisterPresenter;
-import com.mustafa.dishdash.main.data_layer.FavoriteMealsRepository;
 import com.mustafa.dishdash.main.data_layer.MealsRepository;
 import com.mustafa.dishdash.main.data_layer.db.favorites.FavoritesMealsLocalDatasource;
+import com.mustafa.dishdash.main.data_layer.db.future_planes.FuturePlanesLocalDatasource;
 import com.mustafa.dishdash.main.data_layer.firebase.favorite_meals.FavoritesRemoteDatasource;
+import com.mustafa.dishdash.main.data_layer.firebase.future_plane.FuturePlanesRemoteDatasource;
 import com.mustafa.dishdash.main.data_layer.network.MealsRemoteDatasource;
 import com.mustafa.dishdash.main.data_layer.shared_prefs.TodayMealLocalDatasource;
 
@@ -71,8 +72,13 @@ public class RegisterFragment extends Fragment implements RegisterView {
         });
 
         presenter = new RegisterPresenter(AuthRepository.getInstance(new UserRemoteDatasource(getActivity())),
-                FavoriteMealsRepository.getInstance(new FavoritesMealsLocalDatasource(getContext()), new FavoritesRemoteDatasource()),
-                MealsRepository.getInstance(new MealsRemoteDatasource(), new TodayMealLocalDatasource(getContext()), new FavoritesMealsLocalDatasource(getContext())),
+                MealsRepository.getInstance(
+                        new MealsRemoteDatasource(),
+                        new TodayMealLocalDatasource(getContext()),
+                        new FavoritesMealsLocalDatasource(getContext()),
+                        new FavoritesRemoteDatasource(),
+                        new FuturePlanesRemoteDatasource(),
+                        new FuturePlanesLocalDatasource(getContext())),
                 this);
 
         btnRegister.setOnClickListener(v -> {

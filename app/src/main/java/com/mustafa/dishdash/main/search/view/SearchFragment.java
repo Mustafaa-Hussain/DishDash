@@ -11,7 +11,6 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,8 +18,13 @@ import android.widget.TextView;
 
 import com.google.android.material.chip.ChipGroup;
 import com.mustafa.dishdash.R;
-import com.mustafa.dishdash.main.search.data_layer.SearchRemoteDataSource;
-import com.mustafa.dishdash.main.search.data_layer.SearchRepository;
+import com.mustafa.dishdash.main.data_layer.MealsRepository;
+import com.mustafa.dishdash.main.data_layer.db.favorites.FavoritesMealsLocalDatasource;
+import com.mustafa.dishdash.main.data_layer.db.future_planes.FuturePlanesLocalDatasource;
+import com.mustafa.dishdash.main.data_layer.firebase.favorite_meals.FavoritesRemoteDatasource;
+import com.mustafa.dishdash.main.data_layer.firebase.future_plane.FuturePlanesRemoteDatasource;
+import com.mustafa.dishdash.main.data_layer.network.MealsRemoteDatasource;
+import com.mustafa.dishdash.main.data_layer.shared_prefs.TodayMealLocalDatasource;
 import com.mustafa.dishdash.main.search.presenter.SearchPresenter;
 import com.mustafa.dishdash.main.search.view.adapter.ItemClickListener;
 import com.mustafa.dishdash.main.search.view.adapter.SearchAdapter;
@@ -67,7 +71,12 @@ public class SearchFragment extends Fragment implements ItemClickListener, Searc
         setOnClickListener();
 
         presenter = new SearchPresenter(this,
-                SearchRepository.getInstance(new SearchRemoteDataSource()));
+                MealsRepository.getInstance(new MealsRemoteDatasource(),
+                        new TodayMealLocalDatasource(getContext()),
+                        new FavoritesMealsLocalDatasource(getContext()),
+                        new FavoritesRemoteDatasource(),
+                        new FuturePlanesRemoteDatasource(),
+                        new FuturePlanesLocalDatasource(getContext())));
 
         adapter = new SearchAdapter(getContext(), this);
         searchRecyclerView.setAdapter(adapter);

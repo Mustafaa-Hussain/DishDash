@@ -1,8 +1,9 @@
-package com.mustafa.dishdash.main.search.data_layer.models.filter_by_name;
+package com.mustafa.dishdash.main.data_layer.pojo.search.ingredients;
+
 
 import java.util.List;
 
-public class FilterByNameResponse{
+public class IngredientsResponse{
 	private List<MealsItem> meals;
 
 	public List<MealsItem> getMeals(){

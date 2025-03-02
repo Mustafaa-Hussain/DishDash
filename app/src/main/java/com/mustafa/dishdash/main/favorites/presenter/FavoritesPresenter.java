@@ -3,7 +3,7 @@ package com.mustafa.dishdash.main.favorites.presenter;
 import android.annotation.SuppressLint;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.mustafa.dishdash.main.data_layer.FavoriteMealsRepository;
+import com.mustafa.dishdash.main.data_layer.MealsRepository;
 import com.mustafa.dishdash.main.data_layer.firebase.favorite_meals.UploadRemoteFavoriteMealsCallBack;
 import com.mustafa.dishdash.main.data_layer.pojo.random_meal.MealsItem;
 import com.mustafa.dishdash.main.favorites.view.FavoritesView;
@@ -15,13 +15,13 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable;
 
 public class FavoritesPresenter implements UploadRemoteFavoriteMealsCallBack {
     private FavoritesView view;
-    private FavoriteMealsRepository favoriteMealsRepository;
+    private MealsRepository repository;
     private CompositeDisposable compositeDisposable;
 
     public FavoritesPresenter(FavoritesView view,
-                              FavoriteMealsRepository favoriteMealsRepository) {
+                              MealsRepository repository) {
         this.view = view;
-        this.favoriteMealsRepository = favoriteMealsRepository;
+        this.repository = repository;
         this.compositeDisposable = new CompositeDisposable();
     }
 
@@ -29,7 +29,7 @@ public class FavoritesPresenter implements UploadRemoteFavoriteMealsCallBack {
     public void getAllFavoriteMeals() {
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
             compositeDisposable.add(
-                    favoriteMealsRepository
+                    repository
                             .getFavoriteMeals()
                             .subscribe(mealsItems -> {
                                 view.allFavoriteMeals(mealsItems);
@@ -45,7 +45,7 @@ public class FavoritesPresenter implements UploadRemoteFavoriteMealsCallBack {
     @SuppressLint("CheckResult")
     public void removeFavoriteMeal(MealsItem meal) {
         compositeDisposable.add(
-                favoriteMealsRepository
+                repository
                         .removeFavoriteMeal(meal).subscribe(() -> {
                                     view.onRemovedSuccess();
                                     syncFavorites();
@@ -55,14 +55,14 @@ public class FavoritesPresenter implements UploadRemoteFavoriteMealsCallBack {
 
     private void syncFavorites() {
         compositeDisposable.add(
-                favoriteMealsRepository
+                repository
                         .getFavoriteMeals()
                         .flatMap(mealsItems ->
                                 Flowable.fromIterable(mealsItems)
                                         .map(mealsItem -> mealsItem.getIdMeal())
                                         .collect(Collectors.toList()).toFlowable())
                         .subscribe(mealsId -> {
-                            favoriteMealsRepository
+                            repository
                                     .uploadFavoriteMeals(FavoritesPresenter.this, mealsId);
                         }));
     }

@@ -1,4 +1,4 @@
-package com.mustafa.dishdash.main.search.data_layer.models.filter_by_name;
+package com.mustafa.dishdash.main.data_layer.pojo.search.filter_by_name;
 
 public class MealsItem{
 	private Object strImageSource;

@@ -27,8 +27,6 @@ import com.mustafa.dishdash.R;
 import com.mustafa.dishdash.auth.data_layer.AuthRepository;
 import com.mustafa.dishdash.auth.data_layer.firebase.UserRemoteDatasource;
 import com.mustafa.dishdash.auth.login.presenter.LoginPresenter;
-import com.mustafa.dishdash.main.data_layer.FavoriteMealsRepository;
-import com.mustafa.dishdash.main.data_layer.FuturePlanesRepository;
 import com.mustafa.dishdash.main.data_layer.MealsRepository;
 import com.mustafa.dishdash.main.data_layer.db.favorites.FavoritesMealsLocalDatasource;
 import com.mustafa.dishdash.main.data_layer.db.future_planes.FuturePlanesLocalDatasource;
@@ -69,14 +67,14 @@ public class LoginFragment extends Fragment implements LoginView {
         super.onViewCreated(view, savedInstanceState);
         setupUI(view);
 
-        presenter = new LoginPresenter(AuthRepository.getInstance(new UserRemoteDatasource(getActivity())),
-                FavoriteMealsRepository.getInstance(new FavoritesMealsLocalDatasource(getContext()),
-                        new FavoritesRemoteDatasource()),
-                FuturePlanesRepository.getInstance(new FuturePlanesLocalDatasource(getContext()),
-                        new FuturePlanesRemoteDatasource()),
+        presenter = new LoginPresenter(
+                AuthRepository.getInstance(new UserRemoteDatasource(getActivity())),
                 MealsRepository.getInstance(new MealsRemoteDatasource(),
                         new TodayMealLocalDatasource(getContext()),
-                        new FavoritesMealsLocalDatasource(getContext())),
+                        new FavoritesMealsLocalDatasource(getContext()),
+                        new FavoritesRemoteDatasource(),
+                        new FuturePlanesRemoteDatasource(),
+                        new FuturePlanesLocalDatasource(getContext())),
                 this);
 
         gotoRegistration.setOnClickListener(v -> {
